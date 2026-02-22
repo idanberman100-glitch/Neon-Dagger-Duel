@@ -132,6 +132,7 @@
             pointer-events: auto;
             text-align: center;
             z-index: 10;
+            overflow-y: auto;
         }
 
         h1 {
@@ -207,7 +208,6 @@
 
         .hidden { display: none !important; }
 
-        /* Multiplayer Lobby Styles */
         #lobbyPanel {
             background: #222;
             padding: 20px;
@@ -358,28 +358,40 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // --- Firebase Setup ---
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-neon-dagger';
+    const firebaseConfig = {
+        apiKey: "AIzaSyDZgO5btByxfuPY_rgSwMdNlheISWOfDrk",
+        authDomain: "neon-weapon-duel.firebaseapp.com",
+        projectId: "neon-weapon-duel",
+        storageBucket: "neon-weapon-duel.firebasestorage.app",
+        messagingSenderId: "125111155826",
+        appId: "1:125111155826:web:1572f522e12cc2ba1996eb"
+    };
+    
+    const appId = 'neon-weapon-duel';
     let auth, db, user;
     
-    if (firebaseConfig) {
+    try {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
 
+        // Uses Standard Anonymous Authentication for standalone websites
         const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
+            try {
                 await signInAnonymously(auth);
+            } catch (err) {
+                console.error("Firebase Auth Error:", err);
+                document.getElementById('lobbyErrorMsg').innerText = "Database connection failed. Did you enable Anonymous Auth in Firebase?";
             }
         };
         initAuth();
         onAuthStateChanged(auth, u => { user = u; });
+    } catch (e) {
+        console.error("Firebase Initialization Error:", e);
     }
 
     // --- Game Engine Variables ---
@@ -520,7 +532,10 @@
     });
 
     document.getElementById('createRoomBtn').addEventListener('click', async () => {
-        if (!user) return;
+        if (!user) {
+            showError("Authentication missing. Setup Firebase Auth correctly.");
+            return;
+        }
         currentRoomCode = Math.floor(1000 + Math.random() * 9000).toString();
         displayRoomCode.innerText = currentRoomCode + ` (1/${numPlayers})`;
         lobbyOptions.classList.add('hidden');
@@ -537,6 +552,7 @@
         myPlayerId = 1;
         
         try {
+            // Setup base game record
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode), {
                 status: 'waiting',
                 hostClass: selectedCharId,
@@ -570,7 +586,8 @@
                 }
             }, (err) => console.error(err));
         } catch(e) {
-            showError("Server error. Cannot create room.");
+            showError("Server error. Check Firebase Rules.");
+            console.error(e);
         }
     });
 
@@ -662,6 +679,7 @@
         container.style.transform = `scale(${scale})`;
     }
     window.addEventListener('resize', () => { if (gameActive) resizeArena(); });
+
 
     // --- Utility Classes & Helpers ---
 
@@ -959,7 +977,6 @@
 
                     if (blockingObs) {
                         if (blockingObs.isBuilt) {
-                            // Destroy player-made walls if they block the way
                             wantToAttack = true;
                             aimTargetX = blockingObs.x + blockingObs.w / 2;
                             aimTargetY = blockingObs.y + blockingObs.h / 2;
@@ -1032,9 +1049,9 @@
                     }
 
                     if (!wantToAttack) {
-                        if (this.weaponType === 'orb') {
-                            aimTargetX = targetX; 
-                            aimTargetY = targetY;
+                        if (this.weaponType === 'orb' && enemy) {
+                            aimTargetX = enemy.x; 
+                            aimTargetY = enemy.y;
                         } else if (moveX !== 0 || moveY !== 0) {
                             aimTargetX = this.x + moveX; 
                             aimTargetY = this.y + moveY; 

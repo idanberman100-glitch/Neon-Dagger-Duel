@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Dagger Duel</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            border: 4px solid #333;
+            border-radius: 8px;
+            background: #1a1a1a;
+            transform-origin: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .health-bar-container {
+            position: absolute;
+            width: 200px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #fff;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #p1-health-container { top: 20px; left: 20px; border-color: #0ff; box-shadow: 0 0 10px #0ff; }
+        #p2-health-container { top: 20px; right: 20px; border-color: #f0f; box-shadow: 0 0 10px #f0f; }
+        #p3-health-container { bottom: 20px; left: 20px; border-color: #ff0; box-shadow: 0 0 10px #ff0; }
+        #p4-health-container { bottom: 20px; right: 20px; border-color: #0f0; box-shadow: 0 0 10px #0f0; }
+
+        .health-fill {
+            height: 100%;
+            width: 100%;
+            transition: width 0.2s ease-out;
+        }
+
+        #p1-health { background-color: #0ff; }
+        #p2-health { background-color: #f0f; }
+        #p3-health { background-color: #ff0; }
+        #p4-health { background-color: #0f0; }
+
+        .reload-bar-container {
+            position: absolute;
+            width: 150px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #555;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        #p1-reload-container { top: 45px; left: 20px; }
+        #p2-reload-container { top: 45px; right: 20px; }
+        #p3-reload-container { bottom: 45px; left: 20px; }
+        #p4-reload-container { bottom: 45px; right: 20px; }
+        
+        .reload-fill { background-color: #888; height: 100%; width: 100%; }
+
+        .player-label {
+            position: absolute;
+            font-weight: bold;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .score-label {
+            position: absolute;
+            font-weight: bold;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: none; 
+        }
+
+        #p1-label { top: 60px; left: 20px; color: #0ff; }
+        #p1-score { top: 90px; left: 20px; color: #0ff; }
+        
+        #p2-label { top: 60px; right: 20px; color: #f0f; text-align: right; }
+        #p2-score { top: 90px; right: 20px; color: #f0f; text-align: right; }
+
+        #p3-label { bottom: 60px; left: 20px; color: #ff0; }
+        #p3-score { bottom: 90px; left: 20px; color: #ff0; }
+
+        #p4-label { bottom: 60px; right: 20px; color: #0f0; text-align: right; }
+        #p4-score { bottom: 90px; right: 20px; color: #0f0; text-align: right; }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 15px #fff;
+        }
+
+        p.instructions {
+            font-size: 16px;
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #111;
+            background: #0ff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 15px #0ff;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #fff;
+            box-shadow: 0 0 25px #fff;
+            transform: scale(1.05);
+        }
+
+        button.pink-btn {
+            background: #f0f;
+            box-shadow: 0 0 15px #f0f;
+        }
+
+        .selection-group {
+            margin: 10px 0;
+        }
+
+        .cards-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 700px;
+        }
+
+        .card {
+            padding: 8px 12px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #222;
+            transition: all 0.2s;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .card:hover { border-color: #aaa; }
+        .card.selected {
+            border-color: #0ff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            background: #333;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Multiplayer Lobby Styles */
+        #lobbyPanel {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #555;
+            margin-top: 20px;
+            min-width: 300px;
+        }
+
+        #joinCodeInput {
+            padding: 10px;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            text-align: center;
+            width: 120px;
+            border: 2px solid #555;
+            border-radius: 5px;
+            background: #111;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        #joinCodeInput:focus {
+            outline: none;
+            border-color: #0ff;
+        }
+
+        #lobbyErrorMsg {
+            color: #f00;
+            font-size: 14px;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="gameContainer">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="ui">
+        <div id="p1-health-container" class="health-bar-container"><div id="p1-health" class="health-fill"></div></div>
+        <div id="p1-reload-container" class="reload-bar-container"><div id="p1-reload" class="reload-fill"></div></div>
+        <div id="p1-label" class="player-label">P1</div>
+        <div id="p1-score" class="score-label">Flags: 0</div>
+        
+        <div id="p2-health-container" class="health-bar-container"><div id="p2-health" class="health-fill"></div></div>
+        <div id="p2-reload-container" class="reload-bar-container"><div id="p2-reload" class="reload-fill"></div></div>
+        <div id="p2-label" class="player-label">P2</div>
+        <div id="p2-score" class="score-label">Flags: 0</div>
+
+        <div id="p3-health-container" class="health-bar-container hidden"><div id="p3-health" class="health-fill"></div></div>
+        <div id="p3-reload-container" class="reload-bar-container hidden"><div id="p3-reload" class="reload-fill"></div></div>
+        <div id="p3-label" class="player-label hidden">P3</div>
+        <div id="p3-score" class="score-label hidden">Flags: 0</div>
+
+        <div id="p4-health-container" class="health-bar-container hidden"><div id="p4-health" class="health-fill"></div></div>
+        <div id="p4-reload-container" class="reload-bar-container hidden"><div id="p4-reload" class="reload-fill"></div></div>
+        <div id="p4-label" class="player-label hidden">P4</div>
+        <div id="p4-score" class="score-label hidden">Flags: 0</div>
+    </div>
+
+    <div id="overlay">
+        <h1 id="mainTitle">NEON DAGGER DUEL</h1>
+        <p class="instructions" id="instructionText">
+            <span style="color: #0ff;">WASD to move, LEFT CLICK to attack/build</span><br>
+        </p>
+        
+        <div id="mainMenus">
+            <div class="selection-group" id="playersGroup">
+                <h3 style="margin-top: 0; margin-bottom: 5px;">Match Size:</h3>
+                <div class="cards-row">
+                    <div class="card selected num-card" data-num="2" style="color: #fff;">1v1</div>
+                    <div class="card num-card" data-num="4" style="color: #fff;">1v1v1v1</div>
+                </div>
+            </div>
+
+            <div class="selection-group" id="modeGroup">
+                <h3 style="margin-top: 0; margin-bottom: 5px;">Select Game Mode:</h3>
+                <div class="cards-row">
+                    <div class="card selected mode-card" data-mode="deathmatch" style="color: #fff;">DEATHMATCH<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Eliminate</span></div>
+                    <div class="card mode-card" data-mode="ctf" style="color: #fff;">CAPTURE THE FLAG<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">First to 3</span></div>
+                    <div class="card mode-card" data-mode="bedwars" style="color: #fff;">BED WARS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Destroy Core</span></div>
+                </div>
+            </div>
+
+            <div class="selection-group" id="mapGroup">
+                <h3 style="margin-top: 0; margin-bottom: 5px;">Select Map:</h3>
+                <div class="cards-row">
+                    <div class="card selected map-card" data-map="open" style="color: #fff;">OPEN ARENA<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">No cover</span></div>
+                    <div class="card map-card" data-map="crossroads" style="color: #fff;">CROSSROADS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Center clash</span></div>
+                    <div class="card map-card" data-map="pillars" style="color: #fff;">PILLARS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">4 Pillars</span></div>
+                    <div class="card map-card" data-map="labyrinth" style="color: #fff;">LABYRINTH<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Tight corners</span></div>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <h3 style="margin-top: 0; margin-bottom: 5px;">Select Your Class:</h3>
+                <div class="cards-row">
+                    <div class="card selected char-card" data-char="square" style="color: #0ff;">SQUARE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Balanced</span></div>
+                    <div class="card char-card" data-char="circle" style="color: #ff0;">CIRCLE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Speed (3 HP)</span></div>
+                    <div class="card char-card" data-char="triangle" style="color: #f80;">TRIANGLE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Heavy (7 HP)</span></div>
+                    <div class="card char-card" data-char="hexagon" style="color: #0f0;">HEXAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Sniper (2 HP)</span></div>
+                    <div class="card char-card" data-char="pentagon" style="color: #a0f;">PENTAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Builder (4 HP)</span></div>
+                    <div class="card char-card" data-char="octagon" style="color: #f00;">OCTAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Dasher (4 HP)</span></div>
+                    <div class="card char-card" data-char="trapezoid" style="color: #0fa;">TRAPEZOID<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Orb Mage (3 HP)</span></div>
+                    <div class="card char-card" data-char="diamond" style="color: #f08;">DIAMOND<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Bouncer (4 HP)</span></div>
+                </div>
+            </div>
+
+            <div class="selection-group" id="difficultyGroup">
+                <h3 style="margin-top: 0; margin-bottom: 5px;">Bot Difficulty:</h3>
+                <div class="cards-row">
+                    <div class="card diff-card" data-diff="easy" style="color: #0f0;">EASY</div>
+                    <div class="card selected diff-card" data-diff="normal" style="color: #ff0;">NORMAL</div>
+                    <div class="card diff-card" data-diff="hard" style="color: #f00;">HARD</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <button id="startBtn">Play vs Bot</button>
+                <button id="multiplayerBtn" class="pink-btn">Play Online</button>
+            </div>
+        </div>
+
+        <div id="lobbyPanel" class="hidden">
+            <div id="lobbyOptions">
+                <h3 style="margin-top: 0;">Online Multiplayer</h3>
+                <p style="font-size:14px; color:#aaa; margin-bottom: 20px;">Challenge friends over the internet.</p>
+                
+                <button id="createRoomBtn">Create Room</button>
+                <div style="margin: 15px 0; color: #aaa;">- OR -</div>
+                <input type="text" id="joinCodeInput" placeholder="CODE" maxlength="4">
+                <button id="joinRoomBtn" class="pink-btn">Join Room</button>
+                
+                <br><br>
+                <button id="backToMenuBtn" style="background:#555; box-shadow: 0 0 10px #555;">Back</button>
+            </div>
+            <div id="lobbyWait" class="hidden">
+                <h2 style="color: #0ff;">Room Code: <span id="displayRoomCode" style="color: #fff; font-size: 36px; display:block; margin: 10px 0;"></span></h2>
+                <p>Waiting for opponents to join...</p>
+                <button id="cancelRoomBtn" style="background:#555; box-shadow: 0 0 10px #555; margin-top:20px;">Cancel</button>
+            </div>
+            <div id="lobbyErrorMsg"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- Firebase Setup ---
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-neon-dagger';
+    let auth, db, user;
+    
+    if (firebaseConfig) {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+        initAuth();
+        onAuthStateChanged(auth, u => { user = u; });
+    }
+
+    // --- Game Engine Variables ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    
+    // UI Elements
+    const mainMenus = document.getElementById('mainMenus');
+    const lobbyPanel = document.getElementById('lobbyPanel');
+    const lobbyOptions = document.getElementById('lobbyOptions');
+    const lobbyWait = document.getElementById('lobbyWait');
+    const displayRoomCode = document.getElementById('displayRoomCode');
+    const joinCodeInput = document.getElementById('joinCodeInput');
+    const lobbyErrorMsg = document.getElementById('lobbyErrorMsg');
+
+    // Constants
+    const CHARACTERS = {
+        square: { shape: 'square', weapon: 'dagger', health: 5, speed: 4.5, range: 40, cd: 20, damage: 1 },
+        circle: { shape: 'circle', weapon: 'dagger', health: 3, speed: 6.0, range: 30, cd: 12, damage: 1 },
+        triangle: { shape: 'triangle', weapon: 'dagger', health: 7, speed: 3.0, range: 55, cd: 35, damage: 1 },
+        hexagon: { shape: 'hexagon', weapon: 'bow', health: 2, speed: 4.0, range: 0, cd: 45, damage: 2 },
+        pentagon: { shape: 'pentagon', weapon: 'builder', health: 4, speed: 4.0, range: 0, cd: 60, damage: 0 },
+        octagon: { shape: 'octagon', weapon: 'dash', health: 4, speed: 5.0, range: 0, cd: 40, damage: 1 },
+        trapezoid: { shape: 'trapezoid', weapon: 'orb', health: 3, speed: 5.5, range: 0, cd: 90, damage: 1 },
+        diamond: { shape: 'diamond', weapon: 'bounce', health: 4, speed: 5.0, range: 0, cd: 30, damage: 1 }
+    };
+    
+    let ARENA_WIDTH = 800;
+    let ARENA_HEIGHT = 600;
+    const MAX_CTF_SCORE = 3;
+    
+    // Game State
+    let selectedCharId = 'square';
+    let currentMode = 'deathmatch';
+    let currentDifficulty = 'normal';
+    let currentMapLayout = 'open';
+    let numPlayers = 2; 
+    let myPlayerId = 1;
+    let gameActive = false;
+    
+    // Entities
+    let players = [];
+    let particles = [];
+    let arrows = [];
+    let screenShake = 0;
+    let obstacles = [];
+    let baseMapObstacles = [];
+    let builtObstacles = [];
+    
+    let scores = {};
+    let flags = {};
+    let beds = {};
+
+    // Input state
+    const keys = {};
+    window.addEventListener('keydown', e => keys[e.code] = true);
+    window.addEventListener('keyup', e => keys[e.code] = false);
+
+    const mouse = { x: ARENA_WIDTH / 2, y: ARENA_HEIGHT / 2, isDown: false };
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+    });
+    canvas.addEventListener('mousedown', (e) => { if (e.button === 0) mouse.isDown = true; });
+    window.addEventListener('mouseup', (e) => { if (e.button === 0) mouse.isDown = false; });
+
+    // Multiplayer State
+    let isMultiplayer = false;
+    let isHost = false;
+    let currentRoomCode = null;
+    let remoteInputs = {};
+    let unsubscribeRoom = null;
+    let unsubscribeInputs = null;
+    let syncInterval = null;
+
+    // UI Event Listeners
+    document.querySelectorAll('.num-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            document.querySelectorAll('.num-card').forEach(c => c.classList.remove('selected'));
+            e.currentTarget.classList.add('selected');
+            numPlayers = parseInt(e.currentTarget.getAttribute('data-num'));
+        });
+    });
+
+    document.querySelectorAll('.char-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+            e.currentTarget.classList.add('selected');
+            selectedCharId = e.currentTarget.getAttribute('data-char');
+        });
+    });
+
+    document.querySelectorAll('.mode-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+            e.currentTarget.classList.add('selected');
+            currentMode = e.currentTarget.getAttribute('data-mode');
+        });
+    });
+
+    document.querySelectorAll('.map-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            document.querySelectorAll('.map-card').forEach(c => c.classList.remove('selected'));
+            e.currentTarget.classList.add('selected');
+            currentMapLayout = e.currentTarget.getAttribute('data-map');
+        });
+    });
+
+    document.querySelectorAll('.diff-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            document.querySelectorAll('.diff-card').forEach(c => c.classList.remove('selected'));
+            e.currentTarget.classList.add('selected');
+            currentDifficulty = e.currentTarget.getAttribute('data-diff');
+        });
+    });
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+        isMultiplayer = false;
+        startGameLocally();
+    });
+
+    document.getElementById('multiplayerBtn').addEventListener('click', () => {
+        if (!user) { showError("Connecting to server... please wait a moment."); return; }
+        mainMenus.classList.add('hidden');
+        lobbyPanel.classList.remove('hidden');
+        lobbyOptions.classList.remove('hidden');
+        lobbyWait.classList.add('hidden');
+        document.getElementById('modeGroup').classList.remove('hidden');
+        document.getElementById('playersGroup').classList.remove('hidden');
+        showError("");
+    });
+
+    document.getElementById('backToMenuBtn').addEventListener('click', () => {
+        lobbyPanel.classList.add('hidden');
+        mainMenus.classList.remove('hidden');
+    });
+
+    document.getElementById('createRoomBtn').addEventListener('click', async () => {
+        if (!user) return;
+        currentRoomCode = Math.floor(1000 + Math.random() * 9000).toString();
+        displayRoomCode.innerText = currentRoomCode + ` (1/${numPlayers})`;
+        lobbyOptions.classList.add('hidden');
+        lobbyWait.classList.remove('hidden');
+        document.getElementById('modeGroup').classList.add('hidden'); 
+        document.getElementById('mapGroup').classList.add('hidden'); 
+        document.getElementById('playersGroup').classList.add('hidden'); 
+        document.getElementById('difficultyGroup').classList.add('hidden');
+        
+        resizeArena();
+        generateBaseMap();
+        isMultiplayer = true;
+        isHost = true;
+        myPlayerId = 1;
+        
+        try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode), {
+                status: 'waiting',
+                hostClass: selectedCharId,
+                mode: currentMode,
+                map: baseMapObstacles,
+                numPlayers: numPlayers,
+                clients: []
+            });
+
+            unsubscribeRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode), (snap) => {
+                if (snap.exists() && !gameActive) {
+                    let data = snap.data();
+                    if (data.status === 'playing') {
+                        startMultiplayerHost(data.clients);
+                    } else if (data.status === 'waiting') {
+                        if (data.clients && data.clients.length === numPlayers - 1) {
+                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode), { status: 'playing' }, { merge: true });
+                        } else {
+                            displayRoomCode.innerText = currentRoomCode + ` (${(data.clients ? data.clients.length : 0) + 1}/${numPlayers})`;
+                        }
+                    }
+                }
+            }, (err) => console.error(err));
+
+            unsubscribeInputs = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'roomInputs', currentRoomCode), (snap) => {
+                if (snap.exists()) {
+                    let inData = snap.data();
+                    for (let id in inData) {
+                        remoteInputs[id] = inData[id];
+                    }
+                }
+            }, (err) => console.error(err));
+        } catch(e) {
+            showError("Server error. Cannot create room.");
+        }
+    });
+
+    document.getElementById('joinRoomBtn').addEventListener('click', async () => {
+        if (!user) return;
+        const code = joinCodeInput.value.toUpperCase();
+        if (code.length !== 4) { showError("Enter a 4-digit code."); return; }
+        
+        try {
+            const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
+            const snap = await getDoc(roomRef);
+            
+            if (snap.exists() && snap.data().status === 'waiting') {
+                let data = snap.data();
+                let clients = data.clients || [];
+                
+                if (clients.length < data.numPlayers - 1) {
+                    currentRoomCode = code;
+                    isMultiplayer = true;
+                    isHost = false;
+                    currentMode = data.mode;
+                    numPlayers = data.numPlayers;
+                    baseMapObstacles = data.map || [];
+                    
+                    clients.push(selectedCharId);
+                    myPlayerId = clients.length + 1; // 2, 3, or 4
+                    
+                    await setDoc(roomRef, { clients: clients }, { merge: true });
+                    
+                    lobbyOptions.classList.add('hidden');
+                    lobbyWait.classList.remove('hidden');
+                    displayRoomCode.innerText = "WAITING FOR HOST...";
+                    
+                    unsubscribeRoom = onSnapshot(roomRef, (docSnap) => {
+                        if (docSnap.exists()) {
+                            let docData = docSnap.data();
+                            if (docData.status === 'playing' && !gameActive) {
+                                startMultiplayerClient(docData.hostClass, docData.clients);
+                            } else if (docData.state && gameActive) {
+                                applyServerState(docData.state);
+                            }
+                        }
+                    }, (err) => console.error(err));
+                    
+                } else {
+                    showError("Room is full.");
+                }
+            } else {
+                showError("Room not found or game already started.");
+            }
+        } catch(e) {
+            showError("Server error. Cannot join room.");
+        }
+    });
+
+    document.getElementById('cancelRoomBtn').addEventListener('click', () => {
+        if (unsubscribeRoom) unsubscribeRoom();
+        if (unsubscribeInputs) unsubscribeInputs();
+        lobbyWait.classList.add('hidden');
+        lobbyOptions.classList.remove('hidden');
+        document.getElementById('modeGroup').classList.remove('hidden');
+        document.getElementById('mapGroup').classList.remove('hidden');
+        document.getElementById('playersGroup').classList.remove('hidden'); 
+        document.getElementById('difficultyGroup').classList.remove('hidden');
+    });
+
+    function showError(msg) {
+        lobbyErrorMsg.innerText = msg;
+    }
+
+    function resizeArena() {
+        if (numPlayers === 4) {
+            ARENA_WIDTH = 1200;
+            ARENA_HEIGHT = 900;
+        } else {
+            ARENA_WIDTH = 800;
+            ARENA_HEIGHT = 600;
+        }
+        canvas.width = ARENA_WIDTH;
+        canvas.height = ARENA_HEIGHT;
+        const container = document.getElementById('gameContainer');
+        container.style.width = ARENA_WIDTH + 'px';
+        container.style.height = ARENA_HEIGHT + 'px';
+        
+        // Auto-scale to fit the screen
+        const scaleX = window.innerWidth / (ARENA_WIDTH + 40);
+        const scaleY = window.innerHeight / (ARENA_HEIGHT + 40);
+        const scale = Math.min(1, scaleX, scaleY);
+        container.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', () => { if (gameActive) resizeArena(); });
+
+    // --- Utility Classes & Helpers ---
+
+    function lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh) {
+        let minX = Math.min(x1, x2), maxX = Math.max(x1, x2);
+        let minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
+        if (maxX < rx || minX > rx + rw || maxY < ry || minY > ry + rh) return false;
+        return true;
+    }
+
+    function getClosestEnemy(me) {
+        let closest = null, minDist = Infinity;
+        for (let p of players) {
+            if (p.id !== me.id && !p.isDead) {
+                let d = Math.hypot(p.x - me.x, p.y - me.y);
+                if (d < minDist) { minDist = d; closest = p; }
+            }
+        }
+        return closest;
+    }
+
+    class Bed {
+        constructor(x, y, color, ownerId) {
+            this.x = x; this.y = y; this.color = color; this.ownerId = ownerId;
+            this.size = 40; this.maxLife = 15; this.life = 15;
+            this.isDestroyed = false; this.invulnerable = 0; this.angle = 0;
+        }
+        update() {
+            if (this.invulnerable > 0) this.invulnerable--;
+            this.angle += 0.02;
+        }
+        draw() {
+            if (this.isDestroyed) return;
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            if (this.invulnerable > 0 && Math.floor(Date.now() / 50) % 2 === 0) ctx.globalAlpha = 0.5;
+            ctx.rotate(this.angle);
+            ctx.strokeStyle = this.color; ctx.lineWidth = 4;
+            ctx.shadowBlur = 15; ctx.shadowColor = this.color;
+            ctx.strokeRect(-this.size/2, -this.size/2, this.size, this.size);
+            ctx.rotate(-this.angle * 2);
+            ctx.fillStyle = '#fff'; ctx.shadowBlur = 20;
+            let innerSize = (this.life / this.maxLife) * this.size * 0.6 + 5;
+            ctx.fillRect(-innerSize/2, -innerSize/2, innerSize, innerSize);
+            ctx.restore();
+        }
+        getRect() { return {x: this.x - this.size/2, y: this.y - this.size/2, w: this.size, h: this.size}; }
+    }
+
+    class Flag {
+        constructor(homeX, homeY, color, ownerId) {
+            this.homeX = homeX; this.homeY = homeY; this.x = homeX; this.y = homeY;
+            this.color = color; this.ownerId = ownerId;
+            this.carrier = null; this.size = 20; this.pulse = 0;
+        }
+        update() {
+            if (this.carrier) { this.x = this.carrier.x; this.y = this.carrier.y - 30; }
+            this.pulse += 0.1;
+        }
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            if (!this.carrier) ctx.translate(0, Math.sin(this.pulse) * 5);
+            ctx.rotate(Math.PI / 4);
+            ctx.fillStyle = this.color; ctx.shadowBlur = 15 + Math.sin(this.pulse * 2) * 5;
+            ctx.shadowColor = this.color;
+            ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+            ctx.fillStyle = '#fff'; ctx.shadowBlur = 0;
+            ctx.fillRect(-this.size/4, -this.size/4, this.size/2, this.size/2);
+            ctx.restore();
+        }
+    }
+
+    class Arrow {
+        constructor(x, y, dirX, dirY, color, ownerId, damage, type = 'arrow') {
+            this.type = type;
+            this.x = x; this.y = y; 
+            this.vx = dirX * (type === 'orb' ? 8 : (type === 'bounce' ? 10 : 12)); 
+            this.vy = dirY * (type === 'orb' ? 8 : (type === 'bounce' ? 10 : 12));
+            this.color = color; this.ownerId = ownerId; this.damage = damage;
+            this.life = type === 'orb' ? 150 : (type === 'bounce' ? 120 : 100); 
+            this.length = 20; this.dirX = dirX; this.dirY = dirY;
+            this.size = type === 'orb' ? 12 : (type === 'bounce' ? 6 : 1);
+            this.bouncesLeft = type === 'bounce' ? 3 : 0;
+        }
+        update() { 
+            if (this.type === 'orb') {
+                let owner = players.find(p => p.id === this.ownerId);
+                if (owner && !owner.isDead) {
+                    let dx = owner.aimTargetX - this.x;
+                    let dy = owner.aimTargetY - this.y;
+                    let dist = Math.hypot(dx, dy);
+                    if (dist > 5) {
+                        let speed = 8;
+                        let targetVx = (dx / dist) * speed;
+                        let targetVy = (dy / dist) * speed;
+                        this.vx += (targetVx - this.vx) * 0.1;
+                        this.vy += (targetVy - this.vy) * 0.1;
+                    }
+                }
+            }
+            this.x += this.vx; 
+            this.y += this.vy; 
+            this.life--; 
+        }
+        draw() {
+            if (this.type === 'arrow') {
+                ctx.beginPath(); ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x - this.dirX * this.length, this.y - this.dirY * this.length);
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color; ctx.stroke();
+            } else if (this.type === 'bounce') {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fillStyle = '#fff'; ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color; ctx.fill();
+            } else {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fillStyle = '#fff'; ctx.shadowBlur = 15;
+                ctx.shadowColor = this.color; ctx.fill();
+            }
+        }
+    }
+
+    class Particle {
+        constructor(x, y, color) {
+            this.x = x; this.y = y; this.color = color;
+            let angle = Math.random() * Math.PI * 2, speed = Math.random() * 5 + 2;
+            this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+            this.life = 1.0; this.decay = Math.random() * 0.05 + 0.02;
+            this.size = Math.random() * 4 + 2;
+        }
+        update() { this.x += this.vx; this.y += this.vy; this.life -= this.decay; }
+        draw() {
+            ctx.globalAlpha = Math.max(0, this.life);
+            ctx.fillStyle = this.color; ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+            ctx.fillRect(this.x, this.y, this.size, this.size);
+            ctx.globalAlpha = 1.0; ctx.shadowBlur = 0;
+        }
+    }
+
+    class Player {
+        constructor(x, y, id, isBot, charStats) {
+            this.id = id; this.homeX = x; this.homeY = y; this.x = x; this.y = y;
+            this.size = 30; this.isBot = isBot;
+            
+            this.shape = charStats.shape; this.color = charStats.color; this.weaponType = charStats.weapon;
+            this.maxHealth = charStats.health; this.health = this.maxHealth;
+            this.speed = charStats.speed; this.attackRange = charStats.range;
+            this.attackCooldown = charStats.cd; this.damage = charStats.damage;
+            
+            this.vx = 0; this.vy = 0; this.dirX = 1; this.dirY = 0;
+            
+            this.isAttacking = false; this.attackTimer = 0; this.attackDuration = 12; this.cooldownTimer = 0;
+            this.knockbackX = 0; this.knockbackY = 0; this.invulnerable = 0;
+            this.isDead = false; this.respawnTimer = 0;
+            
+            this.aiStrafe = 0;
+            this.isDrawing = false; this.drawStartX = 0; this.drawStartY = 0; this.drawEndX = 0; this.drawEndY = 0;
+            this.aimTargetX = this.x; this.aimTargetY = this.y;
+            
+            // Bot pathfinding tracking
+            this.botTick = 0; this.stuckTimer = 0; this.unstuckTimer = 0; 
+            this.unstuckMoveX = 0; this.unstuckMoveY = 0; 
+            this.historyX = x; this.historyY = y;
+            this.botMoveX = 0; this.botMoveY = 0;
+            this.waypointX = x; this.waypointY = y;
+        }
+
+        update() {
+            if (!gameActive) return;
+            if (this.isDead) {
+                this.isDrawing = false;
+                this.respawnTimer--;
+                if (this.respawnTimer <= 0) {
+                    this.isDead = false; this.health = this.maxHealth;
+                    this.x = this.homeX; this.y = this.homeY;
+                    this.knockbackX = 0; this.knockbackY = 0; this.invulnerable = 60;
+                    createExplosion(this.x, this.y, this.color);
+                    updateHealthBars();
+                }
+                return;
+            }
+
+            if (this.invulnerable > 0) this.invulnerable--;
+            if (this.cooldownTimer > 0) this.cooldownTimer--;
+
+            let moveX = 0, moveY = 0, wantToAttack = false;
+            let aimTargetX = this.x + this.dirX, aimTargetY = this.y + this.dirY;
+
+            // --- INPUT LOGIC ---
+            if (isMultiplayer && !isHost) {
+                // Client only visual updates locally. Returns here and lets the server position.
+                return;
+            } else if (isMultiplayer && isHost && this.id !== myPlayerId) {
+                // Host controlling clients via Remote Inputs
+                let input = remoteInputs[this.id];
+                if (input) {
+                    if (input.left) moveX -= 1;
+                    if (input.right) moveX += 1;
+                    if (input.up) moveY -= 1;
+                    if (input.down) moveY += 1;
+                    aimTargetX = input.mouseX;
+                    aimTargetY = input.mouseY;
+                    if (input.attack) wantToAttack = true;
+                }
+
+            } else if (this.id === myPlayerId) {
+                // Local Player
+                if (keys['KeyA']) moveX -= 1;
+                if (keys['KeyD']) moveX += 1;
+                if (keys['KeyW']) moveY -= 1;
+                if (keys['KeyS']) moveY += 1;
+                aimTargetX = mouse.x;
+                aimTargetY = mouse.y;
+                if (keys['Space'] || mouse.isDown) wantToAttack = true;
+
+            } else if (this.isBot) {
+                // CPU BOT Logic
+                if (this.unstuckTimer > 0) {
+                    this.unstuckTimer--;
+                    moveX = this.unstuckMoveX;
+                    moveY = this.unstuckMoveY;
+                    aimTargetX = this.x + moveX;
+                    aimTargetY = this.y + moveY;
+                    if (Math.random() < 0.1) wantToAttack = true; // Flail wildly to break obstacles
+                } else {
+                    let diffAttackMod = currentDifficulty === 'hard' ? 2.5 : (currentDifficulty === 'easy' ? 0.3 : 1);
+                    
+                    let enemy = getClosestEnemy(this);
+                    let targetX = enemy ? enemy.x : this.homeX; 
+                    let targetY = enemy ? enemy.y : this.homeY; 
+                    let targetType = 'player';
+                    let anyEnemyAlive = enemy !== null;
+
+                    if (currentMode === 'ctf') {
+                        let myFlag = flags[this.id];
+                        let flagThief = players.find(p => p.id !== this.id && myFlag && myFlag.carrier === p);
+                        
+                        let closestEnemyFlag = null, minFD = Infinity;
+                        for (let pid in flags) {
+                            if (parseInt(pid) !== this.id) {
+                                let f = flags[pid];
+                                if (!f.carrier) {
+                                    let d = Math.hypot(f.x - this.x, f.y - this.y);
+                                    if (d < minFD) { minFD = d; closestEnemyFlag = f; }
+                                }
+                            }
+                        }
+
+                        if (flagThief) { targetX = flagThief.x; targetY = flagThief.y; targetType = 'player'; }
+                        else if (myFlag && myFlag.carrier === null && (myFlag.x !== myFlag.homeX || myFlag.y !== myFlag.homeY)) { targetX = myFlag.x; targetY = myFlag.y; targetType = 'objective'; }
+                        else if (closestEnemyFlag) { targetX = closestEnemyFlag.x; targetY = closestEnemyFlag.y; targetType = 'objective'; }
+                        
+                    } else if (currentMode === 'bedwars') {
+                        let myBed = beds[this.id];
+                        let distToMyBed = myBed && !myBed.isDestroyed ? Math.hypot(this.x - myBed.x, this.y - myBed.y) : 9999;
+                        
+                        let closestEnemyBed = null, minBD = Infinity;
+                        for (let pid in beds) {
+                            if (parseInt(pid) !== this.id && !beds[pid].isDestroyed) {
+                                let d = Math.hypot(beds[pid].x - this.x, beds[pid].y - this.y);
+                                if (d < minBD) { minBD = d; closestEnemyBed = beds[pid]; }
+                            }
+                        }
+
+                        if (anyEnemyAlive && distToMyBed < 200 && enemy && Math.hypot(enemy.x - myBed.x, enemy.y - myBed.y) < 250) { 
+                            targetX = enemy.x; targetY = enemy.y; targetType = 'player'; 
+                        } else if (closestEnemyBed) { 
+                            targetX = closestEnemyBed.x; targetY = closestEnemyBed.y; targetType = 'objective'; 
+                        }
+                    }
+                    
+                    if (targetType === 'player' && !anyEnemyAlive) { targetX = this.x; targetY = this.y; }
+
+                    // Simplified pathfinding
+                    let avoidanceObstacles = [...obstacles];
+                    if (currentMode === 'bedwars') {
+                        for(let pid in beds) {
+                            if (!beds[pid].isDestroyed) {
+                                let b = beds[pid].getRect();
+                                avoidanceObstacles.push({x: b.x, y: b.y, w: b.w, h: b.h});
+                            }
+                        }
+                    }
+
+                    let waypointX = targetX, waypointY = targetY, blockingObs = null, closestObsDist = Infinity;
+                    for (let obs of avoidanceObstacles) {
+                        let pad = 15;
+                        let isTargetInside = (targetX >= obs.x && targetX <= obs.x + obs.w && targetY >= obs.y && targetY <= obs.y + obs.h);
+                        if (!isTargetInside && lineIntersectsRect(this.x, this.y, targetX, targetY, obs.x - pad, obs.y - pad, obs.w + pad*2, obs.h + pad*2)) {
+                            let dCenter = Math.hypot((obs.x + obs.w/2) - this.x, (obs.y + obs.h/2) - this.y);
+                            if (dCenter < closestObsDist) { closestObsDist = dCenter; blockingObs = obs; }
+                        }
+                    }
+
+                    if (blockingObs) {
+                        if (blockingObs.isBuilt) {
+                            // Destroy player-made walls if they block the way
+                            wantToAttack = true;
+                            aimTargetX = blockingObs.x + blockingObs.w / 2;
+                            aimTargetY = blockingObs.y + blockingObs.h / 2;
+                        } else {
+                            let pad = 35; 
+                            let corners = [
+                                {x: blockingObs.x - pad, y: blockingObs.y - pad}, {x: blockingObs.x + blockingObs.w + pad, y: blockingObs.y - pad},
+                                {x: blockingObs.x - pad, y: blockingObs.y + blockingObs.h + pad}, {x: blockingObs.x + blockingObs.w + pad, y: blockingObs.y + blockingObs.h + pad}
+                            ];
+                            let bestScore = Infinity;
+                            for (let c of corners) {
+                                let score = Math.hypot(c.x - this.x, c.y - this.y) + Math.hypot(targetX - c.x, targetY - c.y);
+                                if (this.waypointX === c.x && this.waypointY === c.y) score -= 50; // Hysteresis prevents rapid switching
+                                for (let otherObs of avoidanceObstacles) {
+                                    if (otherObs !== blockingObs && c.x >= otherObs.x && c.x <= otherObs.x + otherObs.w && c.y >= otherObs.y && c.y <= otherObs.y + otherObs.h) score += 1000;
+                                }
+                                if (score < bestScore) { bestScore = score; waypointX = c.x; waypointY = c.y; }
+                            }
+                        }
+                    }
+
+                    let dx = waypointX - this.x, dy = waypointY - this.y;
+                    let actualDx = targetX - this.x, actualDy = targetY - this.y;
+                    let dist = Math.hypot(dx, dy) || 1, actualDist = Math.hypot(actualDx, actualDy) || 1;
+
+                    if (targetType === 'objective') {
+                        if (dist > 5) { moveX = dx / dist; moveY = dy / dist; }
+                        if (anyEnemyAlive) {
+                            let distToEnemy = Math.hypot(enemy.x - this.x, enemy.y - this.y) || 1;
+                            if (distToEnemy < (this.weaponType === 'bow' || this.weaponType === 'orb' || this.weaponType === 'bounce' ? 350 : 80) && Math.random() < 0.05 * diffAttackMod) {
+                                wantToAttack = true; aimTargetX = enemy.x; aimTargetY = enemy.y;
+                            } else if (moveX !== 0 || moveY !== 0) {
+                                if (this.weaponType === 'orb') {
+                                    aimTargetX = enemy.x; aimTargetY = enemy.y; 
+                                } else {
+                                    aimTargetX = this.x + moveX; aimTargetY = this.y + moveY;
+                                }
+                            }
+                        }
+                        if (currentMode === 'bedwars' && actualDist < (this.weaponType === 'bow' || this.weaponType === 'orb' || this.weaponType === 'bounce' ? 250 : 60) && Math.random() < 0.1 * diffAttackMod) {
+                             wantToAttack = true; aimTargetX = targetX; aimTargetY = targetY;
+                        }
+                    } else if (anyEnemyAlive) {
+                        if (this.weaponType === 'bow' || this.weaponType === 'dash' || this.weaponType === 'builder' || this.weaponType === 'orb' || this.weaponType === 'bounce') {
+                            if (actualDist > (this.weaponType==='bow' || this.weaponType==='orb' || this.weaponType==='bounce' ? 300 : 150)) { moveX = dx / dist; moveY = dy / dist; }
+                            else if (actualDist < (this.weaponType==='builder'?80:200)) { moveX = -dx / dist; moveY = -dy / dist; }
+                            if (actualDist < 400 && Math.random() < 0.04 * diffAttackMod && !blockingObs) { wantToAttack = true; aimTargetX = targetX; aimTargetY = targetY; }
+                        } else {
+                            if (actualDist > 45) { moveX = dx / dist; moveY = dy / dist; }
+                            else if (actualDist < 35) { moveX = -dx / dist; moveY = -dy / dist; }
+                            if (actualDist < 80 && Math.random() < 0.06 * diffAttackMod && !blockingObs) { wantToAttack = true; aimTargetX = targetX; aimTargetY = targetY; }
+                        }
+                        if (Math.random() < 0.05 * diffAttackMod) this.aiStrafe = (Math.random() - 0.5) * 2;
+                        if (this.aiStrafe && !wantToAttack) {
+                            let tempX = moveX; moveX = moveX * 0.8 - moveY * this.aiStrafe; moveY = moveY * 0.8 + tempX * this.aiStrafe;
+                        }
+                    }
+                    
+                    if (wantToAttack && targetType === 'player' && anyEnemyAlive) {
+                        if (currentDifficulty === 'hard') {
+                            aimTargetX = enemy.x + enemy.vx * 15;
+                            aimTargetY = enemy.y + enemy.vy * 15;
+                        } else if (currentDifficulty === 'easy') {
+                            aimTargetX = enemy.x + (Math.random() - 0.5) * 100;
+                            aimTargetY = enemy.y + (Math.random() - 0.5) * 100;
+                        } else {
+                            aimTargetX = enemy.x;
+                            aimTargetY = enemy.y;
+                        }
+                    }
+
+                    if (!wantToAttack) {
+                        if (this.weaponType === 'orb') {
+                            aimTargetX = targetX; 
+                            aimTargetY = targetY;
+                        } else if (moveX !== 0 || moveY !== 0) {
+                            aimTargetX = this.x + moveX; 
+                            aimTargetY = this.y + moveY; 
+                        }
+                    }
+
+                    // Anti-snag
+                    if (moveX !== 0 || moveY !== 0) {
+                        for (let obs of avoidanceObstacles) {
+                            let margin = 20; 
+                            if (this.x > obs.x - margin && this.x < obs.x + obs.w + margin && this.y > obs.y - margin && this.y < obs.y + obs.h + margin) {
+                                let cx = obs.x + obs.w / 2, cy = obs.y + obs.h / 2;
+                                if (Math.abs(this.x - cx) / obs.w > Math.abs(this.y - cy) / obs.h) moveX += Math.sign(this.x - cx) * 0.8;
+                                else moveY += Math.sign(this.y - cy) * 0.8;
+                            }
+                        }
+                    }
+                    
+                    this.waypointX = waypointX;
+                    this.waypointY = waypointY;
+                }
+
+                // Smooth bot movement to prevent vibration/seizures
+                this.botMoveX += (moveX - this.botMoveX) * 0.3;
+                this.botMoveY += (moveY - this.botMoveY) * 0.3;
+                moveX = this.botMoveX;
+                moveY = this.botMoveY;
+
+                // Stuck detection logic
+                this.botTick++;
+                if (this.botTick % 30 === 0) {
+                    if (Math.hypot(this.x - this.historyX, this.y - this.historyY) < 15 && (moveX !== 0 || moveY !== 0)) {
+                        this.stuckTimer++;
+                        if (this.stuckTimer > 1) { 
+                            this.unstuckTimer = 30;
+                            let angle = Math.random() * Math.PI * 2;
+                            this.unstuckMoveX = Math.cos(angle);
+                            this.unstuckMoveY = Math.sin(angle);
+                            this.stuckTimer = 0;
+                        }
+                    } else {
+                        this.stuckTimer = 0;
+                    }
+                    this.historyX = this.x;
+                    this.historyY = this.y;
+                }
+            } // END BOT LOGIC
+
+            this.aimTargetX = aimTargetX;
+            this.aimTargetY = aimTargetY;
+
+            // --- PHYSICS & MOVEMENT ---
+            if (moveX !== 0 || moveY !== 0) {
+                const length = Math.hypot(moveX, moveY);
+                if (length > 0) {
+                    moveX /= length; 
+                    moveY /= length;
+                }
+            }
+            
+            let aimDx = aimTargetX - this.x, aimDy = aimTargetY - this.y;
+            let aimDist = Math.hypot(aimDx, aimDy);
+            if (aimDist > 0) {
+                if (this.isBot) {
+                    this.dirX += (aimDx / aimDist - this.dirX) * 0.2;
+                    this.dirY += (aimDy / aimDist - this.dirY) * 0.2;
+                    let len = Math.hypot(this.dirX, this.dirY);
+                    if (len > 0) { this.dirX /= len; this.dirY /= len; }
+                } else {
+                    this.dirX = aimDx / aimDist;
+                    this.dirY = aimDy / aimDist;
+                }
+            }
+
+            this.vx = moveX * this.speed + this.knockbackX;
+            this.vy = moveY * this.speed + this.knockbackY;
+            this.knockbackX *= 0.85; this.knockbackY *= 0.85;
+            if (Math.abs(this.knockbackX) < 0.5) this.knockbackX = 0;
+            if (Math.abs(this.knockbackY) < 0.5) this.knockbackY = 0;
+
+            this.x += this.vx; this.y += this.vy;
+            this.x = Math.max(this.size/2, Math.min(ARENA_WIDTH - this.size/2, this.x));
+            this.y = Math.max(this.size/2, Math.min(ARENA_HEIGHT - this.size/2, this.y));
+
+            // Obstacle Collision
+            for (let obs of obstacles) {
+                let pr = this.getRect();
+                if (pr.x < obs.x + obs.w && pr.x + pr.w > obs.x && pr.y < obs.y + obs.h && pr.y + pr.h > obs.y) {
+                    let hitTrap = false;
+                    if (obs.isBuilt && obs.ownerId !== this.id) {
+                        if (this.invulnerable <= 0 && !this.isDead) {
+                            hitTrap = true;
+                            let attacker = players.find(p => p.id === obs.ownerId);
+                            let cx = obs.x + obs.w/2, cy = obs.y + obs.h/2;
+                            let dirX = this.x - cx, dirY = this.y - cy, dist = Math.hypot(dirX, dirY) || 1;
+                            if (attacker) applyDamage(attacker, this, dirX/dist, dirY/dist, 1);
+                            createExplosion(cx, cy, obs.color);
+                            obs.life = 0; // mark for deletion
+                        }
+                    }
+                    if (!hitTrap && !this.isDead) {
+                        let overlapLeft = (pr.x + pr.w) - obs.x, overlapRight = (obs.x + obs.w) - pr.x;
+                        let overlapTop = (pr.y + pr.h) - obs.y, overlapBottom = (obs.y + obs.h) - pr.y;
+                        let minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+                        if (minOverlap === overlapLeft) this.x -= overlapLeft;
+                        else if (minOverlap === overlapRight) this.x += overlapRight;
+                        else if (minOverlap === overlapTop) this.y -= overlapTop;
+                        else if (minOverlap === overlapBottom) this.y += overlapBottom;
+                    }
+                }
+            }
+
+            // --- ATTACK EXECUTION ---
+            if (!this.isDead) {
+                if (this.weaponType === 'builder' && (!this.isBot && this.id === myPlayerId)) {
+                    if (wantToAttack && this.cooldownTimer === 0) {
+                        let targetX = aimTargetX, targetY = aimTargetY;
+                        let distToTarget = Math.hypot(targetX - this.x, targetY - this.y);
+                        if (distToTarget > 200) {
+                            targetX = this.x + (targetX - this.x) / distToTarget * 200;
+                            targetY = this.y + (targetY - this.y) / distToTarget * 200;
+                        }
+                        if (!this.isDrawing) { this.isDrawing = true; this.drawStartX = targetX; this.drawStartY = targetY; }
+                        this.drawEndX = targetX; this.drawEndY = targetY;
+                    } else if (!wantToAttack && this.isDrawing) {
+                        this.isDrawing = false; this.cooldownTimer = this.attackCooldown;
+                        let w = Math.max(20, Math.min(Math.abs(this.drawEndX - this.drawStartX), 120));
+                        let h = Math.max(20, Math.min(Math.abs(this.drawEndY - this.drawStartY), 120));
+                        let finalX = this.drawEndX < this.drawStartX ? this.drawStartX - w : this.drawStartX;
+                        let finalY = this.drawEndY < this.drawStartY ? this.drawStartY - h : this.drawStartY;
+                        
+                        builtObstacles.push({ x: finalX, y: finalY, w: w, h: h, isBuilt: true, life: 300, maxLife: 300, color: this.color, ownerId: this.id });
+                        this.knockbackX = -this.dirX * 2; this.knockbackY = -this.dirY * 2;
+                        this.isAttacking = true; this.attackTimer = this.attackDuration;
+                    }
+                } else if (wantToAttack && this.cooldownTimer === 0 && !this.isAttacking) {
+                    this.isAttacking = true; this.attackTimer = this.attackDuration;
+                    if (this.weaponType === 'bow') {
+                        arrows.push(new Arrow(this.x + this.dirX * 15, this.y + this.dirY * 15, this.dirX, this.dirY, this.color, this.id, this.damage, 'arrow'));
+                        this.knockbackX = -this.dirX * 3; this.knockbackY = -this.dirY * 3;
+                    } else if (this.weaponType === 'orb') {
+                        arrows.push(new Arrow(this.x + this.dirX * 25, this.y + this.dirY * 25, this.dirX, this.dirY, this.color, this.id, this.damage, 'orb'));
+                        this.knockbackX = -this.dirX * 2; this.knockbackY = -this.dirY * 2;
+                    } else if (this.weaponType === 'bounce') {
+                        arrows.push(new Arrow(this.x + this.dirX * 15, this.y + this.dirY * 15, this.dirX, this.dirY, this.color, this.id, this.damage, 'bounce'));
+                        this.knockbackX = -this.dirX * 4; this.knockbackY = -this.dirY * 4;
+                    } else if (this.weaponType === 'builder' && (this.isBot || this.id !== myPlayerId)) {
+                        let wallW = Math.abs(this.dirX) > Math.abs(this.dirY) ? 40 : 120;
+                        let wallH = Math.abs(this.dirX) > Math.abs(this.dirY) ? 120 : 40;
+                        builtObstacles.push({
+                            x: this.x + this.dirX * 60 - wallW/2, y: this.y + this.dirY * 60 - wallH/2, w: wallW, h: wallH,
+                            isBuilt: true, life: 300, maxLife: 300, color: this.color, ownerId: this.id
+                        });
+                        this.knockbackX = -this.dirX * 2; this.knockbackY = -this.dirY * 2;
+                    } else if (this.weaponType === 'dash') {
+                        this.knockbackX = this.dirX * 30; this.knockbackY = this.dirY * 30;
+                        this.invulnerable = Math.max(this.invulnerable, this.attackDuration);
+                        for (let i = 0; i < 5; i++) particles.push(new Particle(this.x, this.y, '#fff'));
+                    } else {
+                        this.knockbackX = this.dirX * 6; this.knockbackY = this.dirY * 6;
+                    }
+                }
+            }
+
+            if (this.isAttacking) {
+                this.attackTimer--;
+                if (this.attackTimer <= 0) { this.isAttacking = false; this.cooldownTimer = this.attackCooldown; }
+            }
+        }
+
+        draw() {
+            if (this.isDead) return;
+            ctx.save(); ctx.translate(this.x, this.y);
+            if (this.invulnerable > 0 && Math.floor(Date.now() / 50) % 2 === 0) ctx.globalAlpha = 0.5;
+
+            ctx.fillStyle = this.color; ctx.shadowBlur = 15; ctx.shadowColor = this.color;
+            if (this.shape === 'square') ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+            else {
+                ctx.beginPath();
+                if (this.shape === 'circle') ctx.arc(0, 0, this.size/2, 0, Math.PI*2);
+                else if (this.shape === 'triangle') { ctx.moveTo(0, -this.size/2 - 4); ctx.lineTo(this.size/2 + 2, this.size/2 + 2); ctx.lineTo(-this.size/2 - 2, this.size/2 + 2); }
+                else if (this.shape === 'trapezoid') {
+                    ctx.moveTo(-this.size/4, -this.size/2);
+                    ctx.lineTo(this.size/4, -this.size/2);
+                    ctx.lineTo(this.size/2, this.size/2);
+                    ctx.lineTo(-this.size/2, this.size/2);
+                }
+                else if (this.shape === 'diamond') {
+                    ctx.moveTo(0, -this.size/2 - 5);
+                    ctx.lineTo(this.size/2 + 5, 0);
+                    ctx.lineTo(0, this.size/2 + 5);
+                    ctx.lineTo(-this.size/2 - 5, 0);
+                }
+                else {
+                    let sides = this.shape === 'hexagon' ? 6 : (this.shape === 'pentagon' ? 5 : 8);
+                    let offset = this.shape === 'pentagon' ? Math.PI/2 : (this.shape === 'octagon' ? Math.PI/8 : 0);
+                    for (let i = 0; i < sides; i++) {
+                        let angle = (i * Math.PI * 2) / sides - offset;
+                        if (i === 0) ctx.moveTo(Math.cos(angle) * (this.size / 2), Math.sin(angle) * (this.size / 2));
+                        else ctx.lineTo(Math.cos(angle) * (this.size / 2), Math.sin(angle) * (this.size / 2));
+                    }
+                    ctx.closePath();
+                }
+                ctx.fill();
+            }
+            
+            ctx.fillStyle = '#fff'; ctx.shadowBlur = 0;
+            let eyeOffsetX = this.dirX * 8, eyeOffsetY = this.dirY * 8, perpX = -this.dirY, perpY = this.dirX;
+            ctx.fillRect(eyeOffsetX + perpX*6 - 2, eyeOffsetY + perpY*6 - 2, 4, 4);
+            ctx.fillRect(eyeOffsetX - perpX*6 - 2, eyeOffsetY - perpY*6 - 2, 4, 4);
+
+            if (this.weaponType === 'bow') {
+                ctx.beginPath(); let bowAngle = Math.atan2(this.dirY, this.dirX);
+                ctx.arc(0, 0, this.size * 0.8, bowAngle - Math.PI/2.5, bowAngle + Math.PI/2.5);
+                ctx.strokeStyle = this.isAttacking ? '#fff' : this.color; ctx.lineWidth = 3; ctx.shadowBlur = this.isAttacking ? 15 : 5; ctx.shadowColor = this.color; ctx.stroke();
+            } else if (this.weaponType === 'orb') {
+                ctx.beginPath();
+                let pulse = this.isAttacking ? 15 : 8 + Math.sin(Date.now() / 150) * 3;
+                ctx.arc(this.dirX * 20, this.dirY * 20, pulse, 0, Math.PI*2);
+                ctx.fillStyle = this.isAttacking ? '#fff' : this.color;
+                ctx.shadowBlur = 15; ctx.shadowColor = this.color;
+                ctx.fill();
+            } else if (this.weaponType === 'bounce') {
+                ctx.beginPath();
+                ctx.arc(this.dirX * 20, this.dirY * 20, 6, 0, Math.PI*2);
+                ctx.fillStyle = this.isAttacking ? '#fff' : this.color;
+                ctx.shadowBlur = this.isAttacking ? 15 : 5; ctx.shadowColor = this.color;
+                ctx.fill();
+            } else if (this.weaponType === 'builder') {
+                if (this.isDrawing && this.id === myPlayerId) {
+                    let w = Math.max(20, Math.min(Math.abs(this.drawEndX - this.drawStartX), 120));
+                    let h = Math.max(20, Math.min(Math.abs(this.drawEndY - this.drawStartY), 120));
+                    let finalX = this.drawEndX < this.drawStartX ? this.drawStartX - w : this.drawStartX;
+                    let finalY = this.drawEndY < this.drawStartY ? this.drawStartY - h : this.drawStartY;
+                    ctx.fillStyle = this.color + '44'; ctx.strokeStyle = this.color; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+                    ctx.fillRect(finalX - this.x, finalY - this.y, w, h); ctx.strokeRect(finalX - this.x, finalY - this.y, w, h); ctx.setLineDash([]);
+                }
+                if (this.isAttacking) { ctx.fillStyle = '#fff'; ctx.shadowBlur = 15; ctx.shadowColor = this.color; ctx.fillRect(this.dirX * 20 - 10, this.dirY * 20 - 10, 20, 20); }
+            } else if (this.weaponType === 'dash') {
+                if (this.isAttacking) { ctx.fillStyle = '#fff'; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(0, 0, this.size * 1.2, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1.0; }
+            } else {
+                let dExt = this.isAttacking ? this.attackRange : 10;
+                let dBaseX = this.dirX * (this.size/2), dBaseY = this.dirY * (this.size/2);
+                let dTipX = dBaseX + this.dirX * dExt, dTipY = dBaseY + this.dirY * dExt;
+                ctx.beginPath(); ctx.moveTo(dBaseX + perpX * 5, dBaseY + perpY * 5); ctx.lineTo(dBaseX - perpX * 5, dBaseY - perpY * 5); ctx.lineTo(dTipX, dTipY); ctx.closePath();
+                ctx.fillStyle = this.isAttacking ? '#fff' : '#888'; ctx.shadowBlur = this.isAttacking ? 20 : 0; ctx.shadowColor = '#fff'; ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        getDaggerHitbox() {
+            if (!this.isAttacking || this.isDead) return null;
+            if (this.weaponType === 'dagger') {
+                return { x1: this.x + this.dirX * 15, y1: this.y + this.dirY * 15, x2: this.x + this.dirX * (15 + this.attackRange), y2: this.y + this.dirY * (15 + this.attackRange) };
+            } else if (this.weaponType === 'dash') {
+                return { x1: this.x, y1: this.y, x2: this.x + this.dirX * (this.size * 1.5), y2: this.y + this.dirY * (this.size * 1.5) };
+            }
+            return null;
+        }
+        getRect() { return { x: this.x - this.size/2, y: this.y - this.size/2, w: this.size, h: this.size }; }
+    }
+
+    function generateBaseMap() {
+        baseMapObstacles = [];
+        let cx = ARENA_WIDTH / 2;
+        let cy = ARENA_HEIGHT / 2;
+        let s = numPlayers === 4 ? 1.5 : 1; // Scale obstacles for larger map
+
+        switch (currentMapLayout) {
+            case 'open': break;
+            case 'crossroads':
+                baseMapObstacles.push({x: cx - 20*s, y: cy - 150*s, w: 40*s, h: 300*s});
+                baseMapObstacles.push({x: cx - 150*s, y: cy - 20*s, w: 300*s, h: 40*s});
+                break;
+            case 'pillars':
+                let pOffset = 150 * s;
+                let size = 80 * s;
+                baseMapObstacles.push({x: cx - pOffset - size/2, y: cy - pOffset - size/2, w: size, h: size});
+                baseMapObstacles.push({x: cx + pOffset - size/2, y: cy - pOffset - size/2, w: size, h: size});
+                baseMapObstacles.push({x: cx - pOffset - size/2, y: cy + pOffset - size/2, w: size, h: size});
+                baseMapObstacles.push({x: cx + pOffset - size/2, y: cy + pOffset - size/2, w: size, h: size});
+                baseMapObstacles.push({x: cx - 20*s, y: cy - 20*s, w: 40*s, h: 40*s});
+                break;
+            case 'labyrinth':
+                baseMapObstacles.push({x: cx - 200*s, y: cy - 150*s, w: 20*s, h: 150*s});
+                baseMapObstacles.push({x: cx - 200*s, y: cy, w: 150*s, h: 20*s});
+                baseMapObstacles.push({x: cx + 180*s, y: cy, w: 20*s, h: 150*s});
+                baseMapObstacles.push({x: cx + 50*s, y: cy - 20*s, w: 150*s, h: 20*s});
+                baseMapObstacles.push({x: cx - 20*s, y: cy - 200*s, w: 40*s, h: 100*s});
+                baseMapObstacles.push({x: cx - 20*s, y: cy + 100*s, w: 40*s, h: 100*s});
+                break;
+        }
+    }
+
+    function setupGameEntities(hostClass, clientClasses, isOffline) {
+        players = [];
+        let classes = [hostClass, ...clientClasses];
+        let colors = ['#0ff', '#f0f', '#ff0', '#0f0'];
+        let spawns = [
+            {x: 100, y: 100},
+            {x: ARENA_WIDTH - 100, y: ARENA_HEIGHT - 100},
+            {x: ARENA_WIDTH - 100, y: 100},
+            {x: 100, y: ARENA_HEIGHT - 100}
+        ];
+
+        let isTac = (currentMode === 'ctf' || currentMode === 'bedwars');
+
+        for(let i=0; i<numPlayers; i++) {
+            let stats = { ...CHARACTERS[classes[i]] };
+            stats.color = colors[i];
+            if (isTac) stats.speed *= 0.8;
+            
+            let startX = isTac ? spawns[i].x : (i%2===0 ? 100 : ARENA_WIDTH-100);
+            let startY = isTac ? spawns[i].y : (i<2 ? ARENA_HEIGHT/2 : (i===2 ? 100 : ARENA_HEIGHT-100)); 
+            if (currentMapLayout === 'open' && !isTac) {
+                startX = spawns[i].x; startY = spawns[i].y;
+            }
+
+            let isBot = isOffline && i > 0;
+            let p = new Player(startX, startY, i + 1, isBot, stats);
+            if (i===1 || i===2) p.dirX = -1; // Face center
+            players.push(p);
+
+            // UI Setup
+            let name = isOffline ? (i===0 ? 'P1' : 'BOT ' + i) : (i===0 ? 'HOST' : 'P'+(i+1));
+            if (i === myPlayerId - 1) name = 'YOU';
+            document.getElementById(`p${i+1}-label`).innerText = `${name} - ${stats.shape}`;
+            document.getElementById(`p${i+1}-health-container`).classList.remove('hidden');
+            document.getElementById(`p${i+1}-reload-container`).classList.remove('hidden');
+            document.getElementById(`p${i+1}-label`).classList.remove('hidden');
+            if (isTac) document.getElementById(`p${i+1}-score`).style.display = 'block';
+            else document.getElementById(`p${i+1}-score`).style.display = 'none';
+        }
+
+        // Hide unused UI for missing players
+        for(let i=numPlayers; i<4; i++) {
+            document.getElementById(`p${i+1}-health-container`).classList.add('hidden');
+            document.getElementById(`p${i+1}-reload-container`).classList.add('hidden');
+            document.getElementById(`p${i+1}-label`).classList.add('hidden');
+            document.getElementById(`p${i+1}-score`).style.display = 'none';
+        }
+
+        scores = {1:0, 2:0, 3:0, 4:0};
+        flags = {}; beds = {};
+        builtObstacles = []; arrows = []; particles = [];
+
+        for(let i=0; i<numPlayers; i++) {
+            if (currentMode === 'ctf') flags[i+1] = new Flag(spawns[i].x, spawns[i].y, colors[i], i+1);
+            if (currentMode === 'bedwars') beds[i+1] = new Bed(spawns[i].x, spawns[i].y, colors[i], i+1);
+        }
+        
+        obstacles = [...baseMapObstacles]; 
+        
+        updateScores();
+        updateHealthBars();
+    }
+
+    function startGameLocally() {
+        resizeArena();
+        generateBaseMap();
+        myPlayerId = 1;
+        let botClasses = Object.keys(CHARACTERS);
+        let clientClasses = [];
+        for(let i=1; i<numPlayers; i++) {
+            clientClasses.push(botClasses[Math.floor(Math.random() * botClasses.length)]);
+        }
+        setupGameEntities(selectedCharId, clientClasses, true);
+        
+        mainMenus.classList.add('hidden');
+        overlay.classList.add('hidden');
+        gameActive = true;
+        startGameLoop();
+    }
+
+    function startMultiplayerHost(clientClasses) {
+        resizeArena();
+        setupGameEntities(selectedCharId, clientClasses, false);
+        overlay.classList.add('hidden');
+        gameActive = true;
+        startGameLoop();
+    }
+
+    function startMultiplayerClient(hostClassId, clientClasses) {
+        resizeArena();
+        setupGameEntities(hostClassId, clientClasses, false);
+        overlay.classList.add('hidden');
+        gameActive = true;
+        startGameLoop();
+    }
+
+    // --- Core Syncing (Multiplayer) ---
+    function sendHostState() {
+        if (!gameActive || !isHost || !currentRoomCode) return;
+        
+        const state = {
+            players: players.map(p => ({
+                x: p.x, y: p.y, dirX: p.dirX, dirY: p.dirY, health: p.health, 
+                isAttacking: p.isAttacking, isDead: p.isDead, invul: p.invulnerable, 
+                cdTimer: p.cooldownTimer, maxCd: p.attackCooldown
+            })),
+            scores: scores,
+            builtObstacles: builtObstacles.map(o => ({x: o.x, y: o.y, w: o.w, h: o.h, life: o.life, color: o.color, ownerId: o.ownerId})),
+            arrows: arrows.map(a => ({x: a.x, y: a.y, dirX: a.dirX, dirY: a.dirY, length: a.length, color: a.color, type: a.type, size: a.size})),
+        };
+        
+        if (currentMode === 'ctf') {
+            state.flags = {};
+            for(let id in flags) state.flags[id] = {x: flags[id].x, y: flags[id].y, carrierId: flags[id].carrier ? flags[id].carrier.id : null};
+        }
+        if (currentMode === 'bedwars') {
+            state.beds = {};
+            for(let id in beds) state.beds[id] = {life: beds[id].life, isDestroyed: beds[id].isDestroyed};
+        }
+        
+        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode), { state: state }, { merge: true });
+    }
+
+    function sendClientInputs() {
+        if (!gameActive || isHost || !currentRoomCode) return;
+        let inputs = {
+            up: keys['KeyW'] || keys['ArrowUp'] || false,
+            down: keys['KeyS'] || keys['ArrowDown'] || false,
+            left: keys['KeyA'] || keys['ArrowLeft'] || false,
+            right: keys['KeyD'] || keys['ArrowRight'] || false,
+            attack: keys['Space'] || mouse.isDown || false,
+            mouseX: mouse.x,
+            mouseY: mouse.y
+        };
+        setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'roomInputs', currentRoomCode), { [myPlayerId]: inputs }, { merge: true });
+    }
+
+    function applyServerState(state) {
+        if (!state || !gameActive) return;
+        
+        state.players.forEach((d, i) => {
+            let p = players[i];
+            if (!p) return;
+            if (d.health < p.health && p.health > 0) createExplosion(p.x, p.y, p.color);
+            p.x = d.x; p.y = d.y; p.dirX = d.dirX; p.dirY = d.dirY; p.health = d.health; 
+            p.isAttacking = d.isAttacking; p.isDead = d.isDead; p.invulnerable = d.invul;
+            p.cooldownTimer = d.cdTimer; p.attackCooldown = d.maxCd;
+        });
+        
+        scores = state.scores;
+        updateScores();
+        updateHealthBars();
+
+        builtObstacles = state.builtObstacles.map(o => ({...o, isBuilt: true, maxLife: 300}));
+        arrows = state.arrows.map(a => Object.assign(new Arrow(), a));
+        
+        if (currentMode === 'ctf' && state.flags) {
+            for(let id in flags) {
+                if (state.flags[id]) {
+                    flags[id].x = state.flags[id].x; flags[id].y = state.flags[id].y;
+                    flags[id].carrier = state.flags[id].carrierId ? players.find(p => p.id === state.flags[id].carrierId) : null;
+                }
+            }
+        }
+        if (currentMode === 'bedwars' && state.beds) {
+            for(let id in beds) {
+                if (state.beds[id]) {
+                    if (state.beds[id].life < beds[id].life) createExplosion(beds[id].x, beds[id].y, beds[id].color);
+                    beds[id].life = state.beds[id].life; beds[id].isDestroyed = state.beds[id].isDestroyed;
+                }
+            }
+        }
+    }
+
+    // --- Core Logic functions ---
+    function createExplosion(x, y, color) {
+        for (let i = 0; i < 30; i++) particles.push(new Particle(x, y, color));
+        screenShake = 10;
+    }
+
+    function updateScores() {
+        for(let i=0; i<numPlayers; i++) {
+            let pId = i + 1;
+            let el = document.getElementById(`p${pId}-score`);
+            if (currentMode === 'ctf') {
+                el.innerText = `Flags: ${scores[pId]}`;
+            } else if (currentMode === 'bedwars' && beds[pId]) {
+                el.innerText = beds[pId].isDestroyed ? 'CORE: DEAD' : `CORE: ${Math.ceil((beds[pId].life / beds[pId].maxLife) * 100)}%`;
+            }
+        }
+    }
+
+    function damageBed(bed, dmg) {
+        if (bed.invulnerable > 0 || bed.isDestroyed) return;
+        bed.life -= dmg; bed.invulnerable = 20;
+        createExplosion(bed.x, bed.y, '#fff'); screenShake = 5;
+        if (bed.life <= 0) {
+            bed.isDestroyed = true; screenShake = 25;
+            for(let i=0; i<40; i++) createExplosion(bed.x + (Math.random()-0.5)*40, bed.y + (Math.random()-0.5)*40, bed.color);
+        }
+        updateScores();
+    }
+
+    function applyDamage(attacker, defender, knockbackMultX, knockbackMultY, damageAmount) {
+        if (defender.isDead || defender.invulnerable > 0) return;
+        defender.health -= damageAmount; defender.invulnerable = 30;
+        defender.knockbackX = knockbackMultX * 15; defender.knockbackY = knockbackMultY * 15;
+        createExplosion(defender.x, defender.y, defender.color); updateHealthBars();
+        
+        if (defender.health <= 0) {
+            if (currentMode === 'ctf') {
+                for(let id in flags) if (flags[id].carrier === defender) flags[id].carrier = null;
+                defender.isDead = true; defender.respawnTimer = 90; defender.x = -1000; defender.y = -1000;
+            } else if (currentMode === 'bedwars') {
+                let myBed = beds[defender.id];
+                if (myBed && !myBed.isDestroyed) { 
+                    defender.isDead = true; defender.respawnTimer = 180; defender.x = -1000; defender.y = -1000; 
+                } else { 
+                    defender.isDead = true; defender.respawnTimer = 99999; defender.x = -1000; defender.y = -1000;
+                    let aliveCount = players.filter(p => !p.isDead || (beds[p.id] && !beds[p.id].isDestroyed)).length;
+                    if (aliveCount <= 1) endGame(attacker);
+                }
+            } else { 
+                defender.isDead = true; defender.respawnTimer = 99999; defender.x = -1000; defender.y = -1000;
+                let aliveCount = players.filter(p => !p.isDead).length;
+                if (aliveCount <= 1) endGame(attacker);
+            }
+        }
+    }
+
+    function checkCollisions() {
+        for (let i = 0; i < players.length; i++) {
+            for (let j = i + 1; j < players.length; j++) {
+                let pA = players[i], pB = players[j];
+                if (!pA.isDead && !pB.isDead) {
+                    let dx = pB.x - pA.x, dy = pB.y - pA.y, dist = Math.hypot(dx, dy), minDist = (pA.size + pB.size) / 2;
+                    if (dist < minDist && dist > 0) {
+                        let overlap = minDist - dist, dirX = dx / dist, dirY = dy / dist;
+                        pA.x -= dirX * (overlap / 2); pA.y -= dirY * (overlap / 2); 
+                        pB.x += dirX * (overlap / 2); pB.y += dirY * (overlap / 2);
+                    }
+                }
+            }
+        }
+
+        let checkAttack = (attacker, defender) => {
+            let dagger = attacker.getDaggerHitbox();
+            if (dagger) {
+                let dRect = defender.getRect();
+                if (defender.invulnerable <= 0 && lineIntersectsRect(dagger.x1, dagger.y1, dagger.x2, dagger.y2, dRect.x, dRect.y, dRect.w, dRect.h)) {
+                    applyDamage(attacker, defender, attacker.dirX, attacker.dirY, attacker.damage);
+                }
+                for (let i = builtObstacles.length - 1; i >= 0; i--) {
+                    let obs = builtObstacles[i];
+                    if (lineIntersectsRect(dagger.x1, dagger.y1, dagger.x2, dagger.y2, obs.x, obs.y, obs.w, obs.h)) {
+                        obs.life -= 100; createExplosion(dagger.x2, dagger.y2, '#fff');
+                        if (obs.life <= 0) builtObstacles.splice(i, 1);
+                    }
+                }
+                if (currentMode === 'bedwars') {
+                    for (let id in beds) {
+                        let bed = beds[id];
+                        if (bed && !bed.isDestroyed && bed.ownerId !== attacker.id) {
+                            let br = bed.getRect();
+                            if (lineIntersectsRect(dagger.x1, dagger.y1, dagger.x2, dagger.y2, br.x, br.y, br.w, br.h)) damageBed(bed, attacker.damage);
+                        }
+                    }
+                }
+            }
+        };
+
+        for (let a of players) {
+            for (let d of players) {
+                if (a !== d) checkAttack(a, d);
+            }
+        }
+
+        for (let i = arrows.length - 1; i >= 0; i--) {
+            let arrow = arrows[i], hitObstacle = false, hitWall = false;
+            
+            // Wall Collision
+            if (arrow.x - arrow.size < 0) { arrow.x = arrow.size; arrow.vx *= -1; arrow.dirX *= -1; hitWall = true; }
+            else if (arrow.x + arrow.size > ARENA_WIDTH) { arrow.x = ARENA_WIDTH - arrow.size; arrow.vx *= -1; arrow.dirX *= -1; hitWall = true; }
+            if (arrow.y - arrow.size < 0) { arrow.y = arrow.size; arrow.vy *= -1; arrow.dirY *= -1; hitWall = true; }
+            else if (arrow.y + arrow.size > ARENA_HEIGHT) { arrow.y = ARENA_HEIGHT - arrow.size; arrow.vy *= -1; arrow.dirY *= -1; hitWall = true; }
+
+            if (hitWall) {
+                if (arrow.type === 'bounce' && arrow.bouncesLeft > 0) {
+                    arrow.bouncesLeft--;
+                    createExplosion(arrow.x, arrow.y, '#fff');
+                } else {
+                    arrow.life = 0; continue;
+                }
+            }
+            
+            for (let obs of obstacles) {
+                if (arrow.x + arrow.size >= obs.x && arrow.x - arrow.size <= obs.x + obs.w && arrow.y + arrow.size >= obs.y && arrow.y - arrow.size <= obs.y + obs.h) {
+                    if (arrow.type === 'bounce' && arrow.bouncesLeft > 0) {
+                        let prevX = arrow.x - arrow.vx;
+                        let prevY = arrow.y - arrow.vy;
+                        let hitVertical = (prevX + arrow.size < obs.x || prevX - arrow.size > obs.x + obs.w);
+                        let hitHorizontal = (prevY + arrow.size < obs.y || prevY - arrow.size > obs.y + obs.h);
+                        
+                        if (hitVertical) { arrow.vx *= -1; arrow.dirX *= -1; }
+                        if (hitHorizontal) { arrow.vy *= -1; arrow.dirY *= -1; }
+                        if (!hitVertical && !hitHorizontal) { arrow.vx *= -1; arrow.vy *= -1; arrow.dirX *= -1; arrow.dirY *= -1; }
+
+                        arrow.bouncesLeft--;
+                        createExplosion(arrow.x, arrow.y, '#fff');
+                        
+                        arrow.x += arrow.vx; arrow.y += arrow.vy;
+                    } else {
+                        hitObstacle = true; arrow.life = 0;
+                    }
+                    
+                    if (obs.isBuilt) {
+                        obs.life -= 50; createExplosion(arrow.x, arrow.y, '#fff');
+                        if (obs.life <= 0) builtObstacles.splice(builtObstacles.indexOf(obs), 1);
+                    }
+                    if (hitObstacle) break;
+                }
+            }
+            if (currentMode === 'bedwars' && !hitObstacle && arrow.life > 0) {
+                for (let id in beds) {
+                    let bed = beds[id];
+                    if (bed && !bed.isDestroyed && bed.ownerId !== arrow.ownerId) {
+                        let br = bed.getRect();
+                        if (arrow.x + arrow.size >= br.x && arrow.x - arrow.size <= br.x + br.w && arrow.y + arrow.size >= br.y && arrow.y - arrow.size <= br.y + br.h) { hitObstacle = true; arrow.life = 0; damageBed(bed, arrow.damage); break; }
+                    }
+                }
+            }
+            if (!hitObstacle && arrow.life > 0) {
+                let checkArrowHit = (defender) => {
+                    let ownerP = players.find(p => p.id === arrow.ownerId);
+                    if (arrow.ownerId !== defender.id && !defender.isDead && defender.invulnerable <= 0) {
+                        let dRect = defender.getRect();
+                        if (arrow.x + arrow.size >= dRect.x && arrow.x - arrow.size <= dRect.x + dRect.w && arrow.y + arrow.size >= dRect.y && arrow.y - arrow.size <= dRect.y + dRect.h) { 
+                            let hitDx = arrow.vx !== 0 ? arrow.vx : arrow.dirX;
+                            let hitDy = arrow.vy !== 0 ? arrow.vy : arrow.dirY;
+                            let dist = Math.hypot(hitDx, hitDy) || 1;
+                            applyDamage(ownerP, defender, hitDx/dist, hitDy/dist, arrow.damage); 
+                            arrow.life = 0; 
+                        }
+                    }
+                };
+                players.forEach(p => checkArrowHit(p));
+            }
+        }
+
+        if (currentMode === 'bedwars') {
+            for (let i = builtObstacles.length - 1; i >= 0; i--) {
+                let obs = builtObstacles[i], hitBed = false;
+                for (let id in beds) {
+                    let bed = beds[id];
+                    if (bed && !bed.isDestroyed && bed.ownerId !== obs.ownerId) {
+                        let br = bed.getRect();
+                        if (obs.x < br.x + br.w && obs.x + obs.w > br.x && obs.y < br.y + br.h && obs.y + obs.h > br.y) { hitBed = true; damageBed(bed, 2); createExplosion(obs.x + obs.w/2, obs.y + obs.h/2, obs.color); break; }
+                    }
+                }
+                if (hitBed) builtObstacles.splice(i, 1);
+            }
+        }
+
+        if (currentMode === 'ctf') {
+            let interactWithFlags = (player) => {
+                if (player.isDead) return;
+                
+                for(let id in flags) {
+                    let f = flags[id];
+                    if (f.ownerId !== player.id && !f.carrier && Math.abs(player.x - f.x) < 25 && Math.abs(player.y - f.y) < 25) { 
+                        f.carrier = player; createExplosion(f.x, f.y, '#fff'); 
+                    }
+                }
+                
+                let myFlag = flags[player.id];
+                if (myFlag && !myFlag.carrier && (myFlag.x !== myFlag.homeX || myFlag.y !== myFlag.homeY) && Math.abs(player.x - myFlag.x) < 25 && Math.abs(player.y - myFlag.y) < 25) {
+                    myFlag.x = myFlag.homeX; myFlag.y = myFlag.homeY; createExplosion(myFlag.homeX, myFlag.homeY, myFlag.color);
+                }
+                
+                let distToBase = Math.hypot(player.x - player.homeX, player.y - player.homeY);
+                if (distToBase < 40) {
+                    let scored = false;
+                    for(let id in flags) {
+                        if (flags[id].carrier === player) {
+                            scores[player.id]++; 
+                            flags[id].carrier = null; flags[id].x = flags[id].homeX; flags[id].y = flags[id].homeY;
+                            scored = true;
+                        }
+                    }
+                    if (scored) {
+                        updateScores();
+                        createExplosion(player.homeX, player.homeY, '#fff'); screenShake = 15;
+                        if (scores[player.id] >= MAX_CTF_SCORE) endGame(player);
+                    }
+                }
+            };
+            players.forEach(p => interactWithFlags(p));
+        }
+    }
+
+    function updateHealthBars() {
+        for(let i=0; i<numPlayers; i++) {
+            let p = players[i];
+            if (p) document.getElementById(`p${i+1}-health`).style.width = `${Math.max(0, (p.health / p.maxHealth) * 100)}%`;
+        }
+    }
+
+    function updateReloadBars() {
+        for(let i=0; i<numPlayers; i++) {
+            let p = players[i];
+            if (!p) continue;
+            let bar = document.getElementById(`p${i+1}-reload`);
+            let pct = 100;
+            if (p.isAttacking || p.isDead) pct = 0;
+            else if (p.cooldownTimer > 0) pct = ((p.attackCooldown - p.cooldownTimer) / p.attackCooldown) * 100;
+            
+            bar.style.width = `${Math.max(0, Math.min(100, pct))}%`;
+            bar.style.backgroundColor = pct >= 100 ? p.color : '#888';
+        }
+    }
+
+    function endGame(winner) {
+        gameActive = false;
+        if (syncInterval) clearInterval(syncInterval);
+        setTimeout(() => {
+            overlay.classList.remove('hidden');
+            mainMenus.classList.remove('hidden');
+            lobbyPanel.classList.add('hidden');
+            
+            let name = isMultiplayer ? (winner.id === myPlayerId ? 'YOU' : `PLAYER ${winner.id}`) : (winner.id === 1 ? 'PLAYER 1' : `BOT ${winner.id - 1}`);
+            mainTitle.innerHTML = `<span style="color:${winner.color}">${name} WINS!</span>`;
+            
+            if (currentMode === 'ctf') {
+                let scoreText = "";
+                for(let i=1; i<=numPlayers; i++) scoreText += `P${i}: ${scores[i]} &nbsp; `;
+                document.getElementById('instructionText').innerHTML = `Final Score:<br>${scoreText}`;
+            } else if (currentMode === 'bedwars') document.getElementById('instructionText').innerHTML = "Last core standing. Victory achieved.";
+            else document.getElementById('instructionText').innerHTML = "The superior shape has claimed victory.";
+            
+            document.getElementById('startBtn').innerText = "Rematch Offline";
+        }, 1000);
+    }
+
+    function drawArena() {
+        ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, ARENA_WIDTH, ARENA_HEIGHT);
+        ctx.strokeStyle = '#222'; ctx.lineWidth = 1;
+        ctx.beginPath();
+        for(let x = 0; x <= ARENA_WIDTH; x += 50) { ctx.moveTo(x, 0); ctx.lineTo(x, ARENA_HEIGHT); }
+        for(let y = 0; y <= ARENA_HEIGHT; y += 50) { ctx.moveTo(0, y); ctx.lineTo(ARENA_WIDTH, y); }
+        ctx.stroke();
+
+        if (obstacles.length > 0) {
+            ctx.lineWidth = 2;
+            obstacles.forEach(obs => {
+                ctx.beginPath(); ctx.rect(obs.x, obs.y, obs.w, obs.h);
+                if (obs.isBuilt) { ctx.fillStyle = obs.color + '44'; ctx.strokeStyle = obs.color; ctx.globalAlpha = obs.life / obs.maxLife; } 
+                else { ctx.fillStyle = '#222'; ctx.strokeStyle = '#555'; ctx.globalAlpha = 1.0; }
+                ctx.fill();
+                ctx.shadowBlur = 10; ctx.shadowColor = obs.isBuilt ? obs.color : '#0ff'; ctx.stroke();
+                ctx.shadowBlur = 0; ctx.globalAlpha = 1.0;
+            });
+        }
+
+        if (currentMode === 'ctf' || currentMode === 'bedwars') {
+            let drawBase = (x, y, color) => {
+                ctx.beginPath(); ctx.arc(x, y, 60, 0, Math.PI*2);
+                ctx.fillStyle = color; ctx.globalAlpha = 0.10; ctx.fill();
+                ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.globalAlpha = 0.3; ctx.stroke(); ctx.globalAlpha = 1.0;
+            };
+            players.forEach(p => drawBase(p.homeX, p.homeY, p.color));
+        }
+    }
+
+    function startGameLoop() {
+        if (syncInterval) clearInterval(syncInterval);
+        
+        // Sync loops (50ms interval = 20 network ticks/sec)
+        if (isMultiplayer) {
+            syncInterval = setInterval(() => {
+                if (!gameActive) return;
+                if (isHost) sendHostState();
+                else sendClientInputs();
+            }, 50);
+        }
+        
+        gameLoop();
+    }
+
+    function gameLoop() {
+        if (!gameActive) return;
+        
+        ctx.save();
+        if (screenShake > 0) {
+            ctx.translate((Math.random() - 0.5) * screenShake, (Math.random() - 0.5) * screenShake);
+            screenShake *= 0.9; if (screenShake < 0.5) screenShake = 0;
+        }
+
+        obstacles = [...baseMapObstacles, ...builtObstacles]; 
+
+        drawArena();
+
+        if (players.length > 0) {
+            if (!isMultiplayer || isHost) {
+                players.forEach(p => p.update());
+                
+                if (currentMode === 'ctf') { for(let id in flags) flags[id].update(); } 
+                else if (currentMode === 'bedwars') { for(let id in beds) beds[id].update(); }
+
+                for (let i = builtObstacles.length - 1; i >= 0; i--) {
+                    builtObstacles[i].life--;
+                    if (builtObstacles[i].life <= 0) {
+                        createExplosion(builtObstacles[i].x + builtObstacles[i].w/2, builtObstacles[i].y + builtObstacles[i].h/2, builtObstacles[i].color);
+                        builtObstacles.splice(i, 1);
+                    }
+                }
+                checkCollisions();
+            } else {
+                if (currentMode === 'ctf') { for(let id in flags) flags[id].update(); } 
+                else if (currentMode === 'bedwars') { for(let id in beds) beds[id].update(); }
+            }
+            
+            if (currentMode === 'ctf') { for(let id in flags) flags[id].draw(); } 
+            else if (currentMode === 'bedwars') { for(let id in beds) beds[id].draw(); }
+
+            players.forEach(p => p.draw());
+            updateReloadBars();
+        }
+
+        for (let i = arrows.length - 1; i >= 0; i--) {
+            let arrow = arrows[i];
+            if (!isMultiplayer || isHost) arrow.update();
+            arrow.draw();
+            if (arrow.life <= 0 && (!isMultiplayer || isHost)) arrows.splice(i, 1);
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i]; p.update(); p.draw();
+            if (p.life <= 0) particles.splice(i, 1);
+        }
+
+        ctx.restore();
+        requestAnimationFrame(gameLoop);
+    }
+</script>
+</body>
+</html>
+

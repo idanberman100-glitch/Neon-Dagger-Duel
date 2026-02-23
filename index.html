@@ -126,12 +126,20 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.85);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             pointer-events: auto;
-            text-align: center;
             z-index: 10;
+        }
+
+        #overlayContent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            transform: scale(0.85);
+            transform-origin: center;
         }
 
         h1 {
@@ -271,99 +279,105 @@
     </div>
 
     <div id="overlay">
-        <h1 id="mainTitle">NEON DAGGER DUEL</h1>
-        <p class="instructions" id="instructionText">
-            <span style="color: #0ff;">WASD to move, LEFT CLICK to attack/build</span><br>
-        </p>
-        
-        <div id="mainMenus">
-            <div class="selection-group" id="playersGroup">
-                <h3 style="margin-top: 0; margin-bottom: 5px;">Match Size:</h3>
-                <div class="cards-row">
-                    <div class="card selected num-card" data-num="2" data-juggernaut="false" data-twovstwo="false" style="color: #fff;">1v1</div>
-                    <div class="card num-card" data-num="4" data-juggernaut="false" data-twovstwo="false" style="color: #fff;">1v1v1v1</div>
-                    <div class="card num-card" data-num="4" data-juggernaut="false" data-twovstwo="true" style="color: #0fa;">2v2</div>
-                    <div class="card num-card" data-num="4" data-juggernaut="true" data-twovstwo="false" style="color: #f00;">1v3 BOSS</div>
+        <div id="overlayContent">
+            <h1 id="mainTitle">NEON DAGGER DUEL</h1>
+            <p class="instructions" id="instructionText">
+                <span style="color: #0ff;">WASD to move, LEFT CLICK to attack/build</span><br>
+            </p>
+            
+            <div id="mainMenus">
+                <div class="selection-group" id="playersGroup">
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">Match Size:</h3>
+                    <div class="cards-row">
+                        <div class="card selected num-card" data-num="2" data-juggernaut="false" data-twovstwo="false" style="color: #fff;">1v1</div>
+                        <div class="card num-card" data-num="4" data-juggernaut="false" data-twovstwo="false" style="color: #fff;">1v1v1v1</div>
+                        <div class="card num-card" data-num="4" data-juggernaut="false" data-twovstwo="true" style="color: #0fa;">2v2</div>
+                        <div class="card num-card" data-num="4" data-juggernaut="true" data-twovstwo="false" style="color: #f00;">1v3 BOSS</div>
+                    </div>
+                </div>
+
+                <div class="selection-group" id="modeGroup">
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">Select Game Mode:</h3>
+                    <div class="cards-row">
+                        <div class="card selected mode-card" data-mode="deathmatch" style="color: #fff;">DEATHMATCH<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Eliminate</span></div>
+                        <div class="card mode-card" data-mode="ctf" style="color: #fff;">CAPTURE THE FLAG<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">First to 3</span></div>
+                        <div class="card mode-card" data-mode="bedwars" style="color: #fff;">BED WARS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Destroy Core</span></div>
+                        <div class="card mode-card" data-mode="tag" style="color: #fff;">TAG<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Hot Potato</span></div>
+                    </div>
+                </div>
+
+                <div class="selection-group" id="modifierGroup">
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">Modifiers:</h3>
+                    <div class="cards-row">
+                        <div class="card modifier-card" id="mayhemToggle" style="color: #f80;">MAYHEM<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">No Cooldowns</span></div>
+                        <div class="card modifier-card" id="knockbackToggle" style="color: #0df;">KNOCKBACK<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">High Impact</span></div>
+                        <div class="card modifier-card" id="portalToggle" style="color: #a0f;">PORTALS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Warp Space</span></div>
+                    </div>
+                </div>
+
+                <div class="selection-group" id="mapGroup">
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">Select Map:</h3>
+                    <div class="cards-row">
+                        <div class="card selected map-card" data-map="open" style="color: #fff;">OPEN ARENA<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">No cover</span></div>
+                        <div class="card map-card" data-map="crossroads" style="color: #fff;">CROSSROADS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Center clash</span></div>
+                        <div class="card map-card" data-map="pillars" style="color: #fff;">PILLARS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">4 Pillars</span></div>
+                        <div class="card map-card" data-map="labyrinth" style="color: #fff;">LABYRINTH<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Tight corners</span></div>
+                    </div>
+                </div>
+
+                <div class="selection-group">
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">Select Your Class:</h3>
+                    <div class="cards-row">
+                        <div class="card selected char-card" data-char="square" style="color: #0ff;">SQUARE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Balanced</span></div>
+                        <div class="card char-card" data-char="circle" style="color: #ff0;">CIRCLE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Speed (4 HP)</span></div>
+                        <div class="card char-card" data-char="triangle" style="color: #f80;">TRIANGLE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Heavy (7 HP)</span></div>
+                        <div class="card char-card" data-char="hexagon" style="color: #0f0;">HEXAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Sniper (3.5 HP)</span></div>
+                        <div class="card char-card" data-char="pentagon" style="color: #a0f;">PENTAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Builder (4 HP)</span></div>
+                        <div class="card char-card" data-char="octagon" style="color: #f00;">OCTAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Dasher (4 HP)</span></div>
+                        <div class="card char-card" data-char="trapezoid" style="color: #0fa;">TRAPEZOID<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Orb Mage (3 HP)</span></div>
+                        <div class="card char-card" data-char="diamond" style="color: #f08;">DIAMOND<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Bouncer (4 HP)</span></div>
+                        <div class="card char-card" data-char="star" style="color: #fff;">STAR<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Portal Maker (3 HP)</span></div>
+                        <div class="card char-card" data-char="cross" style="color: #8f8;">CROSS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Hook (2.5 HP)</span></div>
+                        <div class="card char-card" data-char="kite" style="color: #ccc;">KITE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Kunai (2 HP)</span></div>
+                    </div>
+                </div>
+
+                <div class="selection-group" id="difficultyGroup">
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">Bot Difficulty:</h3>
+                    <div class="cards-row">
+                        <div class="card diff-card" data-diff="easy" style="color: #0f0;">EASY</div>
+                        <div class="card selected diff-card" data-diff="normal" style="color: #ff0;">NORMAL</div>
+                        <div class="card diff-card" data-diff="hard" style="color: #f55;">HARD</div>
+                        <div class="card diff-card" data-diff="ultra" style="color: #f00; text-shadow: 0 0 8px #f00; font-weight: 900;">ULTRA</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <button id="startBtn">Play vs Bot</button>
+                    <button id="multiplayerBtn" class="pink-btn">Play Online</button>
                 </div>
             </div>
 
-            <div class="selection-group" id="modeGroup">
-                <h3 style="margin-top: 0; margin-bottom: 5px;">Select Game Mode:</h3>
-                <div class="cards-row">
-                    <div class="card selected mode-card" data-mode="deathmatch" style="color: #fff;">DEATHMATCH<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Eliminate</span></div>
-                    <div class="card mode-card" data-mode="ctf" style="color: #fff;">CAPTURE THE FLAG<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">First to 3</span></div>
-                    <div class="card mode-card" data-mode="bedwars" style="color: #fff;">BED WARS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Destroy Core</span></div>
+            <div id="lobbyPanel" class="hidden">
+                <div id="lobbyOptions">
+                    <h3 style="margin-top: 0;">Online Multiplayer</h3>
+                    <p style="font-size:14px; color:#aaa; margin-bottom: 20px;">Challenge friends over the internet.</p>
+                    
+                    <button id="createRoomBtn">Create Room</button>
+                    <div style="margin: 15px 0; color: #aaa;">- OR -</div>
+                    <input type="text" id="joinCodeInput" placeholder="CODE" maxlength="4">
+                    <button id="joinRoomBtn" class="pink-btn">Join Room</button>
+                    
+                    <br><br>
+                    <button id="backToMenuBtn" style="background:#555; box-shadow: 0 0 10px #555;">Back</button>
                 </div>
-            </div>
-
-            <div class="selection-group" id="modifierGroup">
-                <h3 style="margin-top: 0; margin-bottom: 5px;">Modifiers:</h3>
-                <div class="cards-row">
-                    <div class="card modifier-card" id="mayhemToggle" style="color: #f80;">MAYHEM<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">No Cooldowns</span></div>
-                    <div class="card modifier-card" id="knockbackToggle" style="color: #0df;">KNOCKBACK<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">High Impact</span></div>
-                    <div class="card modifier-card" id="portalToggle" style="color: #a0f;">PORTALS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Warp Space</span></div>
+                <div id="lobbyWait" class="hidden">
+                    <h2 style="color: #0ff;">Room Code: <span id="displayRoomCode" style="color: #fff; font-size: 36px; display:block; margin: 10px 0;"></span></h2>
+                    <p>Waiting for opponents to join...</p>
+                    <button id="cancelRoomBtn" style="background:#555; box-shadow: 0 0 10px #555; margin-top:20px;">Cancel</button>
                 </div>
+                <div id="lobbyErrorMsg"></div>
             </div>
-
-            <div class="selection-group" id="mapGroup">
-                <h3 style="margin-top: 0; margin-bottom: 5px;">Select Map:</h3>
-                <div class="cards-row">
-                    <div class="card selected map-card" data-map="open" style="color: #fff;">OPEN ARENA<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">No cover</span></div>
-                    <div class="card map-card" data-map="crossroads" style="color: #fff;">CROSSROADS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Center clash</span></div>
-                    <div class="card map-card" data-map="pillars" style="color: #fff;">PILLARS<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">4 Pillars</span></div>
-                    <div class="card map-card" data-map="labyrinth" style="color: #fff;">LABYRINTH<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Tight corners</span></div>
-                </div>
-            </div>
-
-            <div class="selection-group">
-                <h3 style="margin-top: 0; margin-bottom: 5px;">Select Your Class:</h3>
-                <div class="cards-row">
-                    <div class="card selected char-card" data-char="square" style="color: #0ff;">SQUARE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Balanced</span></div>
-                    <div class="card char-card" data-char="circle" style="color: #ff0;">CIRCLE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Speed (3 HP)</span></div>
-                    <div class="card char-card" data-char="triangle" style="color: #f80;">TRIANGLE<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Heavy (7 HP)</span></div>
-                    <div class="card char-card" data-char="hexagon" style="color: #0f0;">HEXAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Sniper (2 HP)</span></div>
-                    <div class="card char-card" data-char="pentagon" style="color: #a0f;">PENTAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Builder (4 HP)</span></div>
-                    <div class="card char-card" data-char="octagon" style="color: #f00;">OCTAGON<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Dasher (4 HP)</span></div>
-                    <div class="card char-card" data-char="trapezoid" style="color: #0fa;">TRAPEZOID<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Orb Mage (3 HP)</span></div>
-                    <div class="card char-card" data-char="diamond" style="color: #f08;">DIAMOND<br><span style="font-size: 12px; font-weight: normal; color: #aaa;">Bouncer (4 HP)</span></div>
-                </div>
-            </div>
-
-            <div class="selection-group" id="difficultyGroup">
-                <h3 style="margin-top: 0; margin-bottom: 5px;">Bot Difficulty:</h3>
-                <div class="cards-row">
-                    <div class="card diff-card" data-diff="easy" style="color: #0f0;">EASY</div>
-                    <div class="card selected diff-card" data-diff="normal" style="color: #ff0;">NORMAL</div>
-                    <div class="card diff-card" data-diff="hard" style="color: #f55;">HARD</div>
-                    <div class="card diff-card" data-diff="ultra" style="color: #f00; text-shadow: 0 0 8px #f00; font-weight: 900;">ULTRA</div>
-                </div>
-            </div>
-
-            <div style="margin-top: 15px;">
-                <button id="startBtn">Play vs Bot</button>
-                <button id="multiplayerBtn" class="pink-btn">Play Online</button>
-            </div>
-        </div>
-
-        <div id="lobbyPanel" class="hidden">
-            <div id="lobbyOptions">
-                <h3 style="margin-top: 0;">Online Multiplayer</h3>
-                <p style="font-size:14px; color:#aaa; margin-bottom: 20px;">Challenge friends over the internet.</p>
-                
-                <button id="createRoomBtn">Create Room</button>
-                <div style="margin: 15px 0; color: #aaa;">- OR -</div>
-                <input type="text" id="joinCodeInput" placeholder="CODE" maxlength="4">
-                <button id="joinRoomBtn" class="pink-btn">Join Room</button>
-                
-                <br><br>
-                <button id="backToMenuBtn" style="background:#555; box-shadow: 0 0 10px #555;">Back</button>
-            </div>
-            <div id="lobbyWait" class="hidden">
-                <h2 style="color: #0ff;">Room Code: <span id="displayRoomCode" style="color: #fff; font-size: 36px; display:block; margin: 10px 0;"></span></h2>
-                <p>Waiting for opponents to join...</p>
-                <button id="cancelRoomBtn" style="background:#555; box-shadow: 0 0 10px #555; margin-top:20px;">Cancel</button>
-            </div>
-            <div id="lobbyErrorMsg"></div>
         </div>
     </div>
 </div>
@@ -377,7 +391,7 @@
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-neon-dagger';
     let auth, db, user;
-
+    
     if (firebaseConfig) {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
@@ -411,13 +425,16 @@
     // Constants
     const CHARACTERS = {
         square: { shape: 'square', weapon: 'dagger', health: 5, speed: 4.5, range: 40, cd: 20, damage: 1 },
-        circle: { shape: 'circle', weapon: 'dagger', health: 3, speed: 6.0, range: 30, cd: 12, damage: 1 },
-        triangle: { shape: 'triangle', weapon: 'dagger', health: 7, speed: 3.0, range: 55, cd: 35, damage: 1 },
-        hexagon: { shape: 'hexagon', weapon: 'bow', health: 2, speed: 4.0, range: 0, cd: 45, damage: 2 },
-        pentagon: { shape: 'pentagon', weapon: 'builder', health: 4, speed: 4.0, range: 0, cd: 60, damage: 0 },
+        circle: { shape: 'circle', weapon: 'dagger', health: 4, speed: 6.0, range: 50, cd: 12, damage: 1 },
+        triangle: { shape: 'triangle', weapon: 'dagger', health: 7, speed: 3.5, range: 55, cd: 35, damage: 1 },
+        hexagon: { shape: 'hexagon', weapon: 'bow', health: 3.5, speed: 4.0, range: 0, cd: 45, damage: 2 },
+        pentagon: { shape: 'pentagon', weapon: 'builder', health: 4, speed: 4.0, range: 0, cd: 45, damage: 0 },
         octagon: { shape: 'octagon', weapon: 'dash', health: 4, speed: 5.0, range: 0, cd: 40, damage: 1 },
         trapezoid: { shape: 'trapezoid', weapon: 'orb', health: 3, speed: 5.5, range: 0, cd: 90, damage: 1 },
-        diamond: { shape: 'diamond', weapon: 'bounce', health: 4, speed: 5.0, range: 0, cd: 30, damage: 1 }
+        diamond: { shape: 'diamond', weapon: 'bounce', health: 4, speed: 5.0, range: 0, cd: 30, damage: 1 },
+        star: { shape: 'star', weapon: 'portal', health: 3, speed: 5.0, range: 0, cd: 60, damage: 0 },
+        cross: { shape: 'cross', weapon: 'hook', health: 2.5, speed: 4.5, range: 0, cd: 45, damage: 1 },
+        kite: { shape: 'kite', weapon: 'kunai', health: 2, speed: 5.5, range: 0, cd: 80, damage: 1 }
     };
     
     let ARENA_WIDTH = 800;
@@ -452,6 +469,9 @@
     let scores = {};
     let flags = {};
     let beds = {};
+    
+    let tagItId = null;
+    let tagTimer = 0;
 
     // Input state
     const keys = {};
@@ -815,9 +835,10 @@
     }
 
     class Portal {
-        constructor(x, y, color, id, partnerId) {
+        constructor(x, y, color, id, partnerId, ownerId = null) {
             this.x = x; this.y = y; this.color = color;
             this.id = id; this.partnerId = partnerId;
+            this.ownerId = ownerId;
             this.radius = 25;
             this.angle = 0;
             this.life = 600; // 10 seconds (at 60fps)
@@ -856,14 +877,15 @@
         constructor(x, y, dirX, dirY, color, ownerId, damage, type = 'arrow') {
             this.type = type;
             this.x = x; this.y = y; 
-            this.vx = dirX * (type === 'orb' ? 8 : (type === 'bounce' ? 10 : 12)); 
-            this.vy = dirY * (type === 'orb' ? 8 : (type === 'bounce' ? 10 : 12));
+            this.vx = dirX * (type === 'orb' ? 8 : (type === 'bounce' ? 10 : (type === 'hook' ? 16 : (type === 'kunai' ? 20 : 12)))); 
+            this.vy = dirY * (type === 'orb' ? 8 : (type === 'bounce' ? 10 : (type === 'hook' ? 16 : (type === 'kunai' ? 20 : 12))));
             this.color = color; this.ownerId = ownerId; this.damage = damage;
-            this.life = type === 'orb' ? 150 : (type === 'bounce' ? 120 : 100); 
+            this.life = type === 'orb' ? 150 : (type === 'bounce' ? 120 : (type === 'hook' ? 45 : (type === 'kunai' ? 120 : 100))); 
             this.length = 20; this.dirX = dirX; this.dirY = dirY;
-            this.size = type === 'orb' ? 12 : (type === 'bounce' ? 6 : 1);
+            this.size = type === 'orb' ? 12 : (type === 'bounce' ? 6 : (type === 'hook' ? 10 : 1));
             this.bouncesLeft = type === 'bounce' ? 3 : 0;
             this.teleportCooldown = 0;
+            this.hasHit = false;
         }
         update() { 
             if (this.teleportCooldown > 0) this.teleportCooldown--;
@@ -896,6 +918,47 @@
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
                 ctx.fillStyle = '#fff'; ctx.shadowBlur = 10;
                 ctx.shadowColor = this.color; ctx.fill();
+            } else if (this.type === 'hook') {
+                let owner = players.find(p => p.id === this.ownerId);
+                if (owner && !owner.isDead) {
+                    // Draw Chain
+                    ctx.beginPath();
+                    ctx.moveTo(owner.x, owner.y);
+                    ctx.lineTo(this.x, this.y);
+                    ctx.strokeStyle = '#888';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 4]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                
+                // Draw Grapple Tip
+                ctx.beginPath();
+                let angle = Math.atan2(this.vy !== 0 ? this.vy : this.dirY, this.vx !== 0 ? this.vx : this.dirX);
+                
+                // Shaft
+                let backX = this.x - Math.cos(angle) * this.size;
+                let backY = this.y - Math.sin(angle) * this.size;
+                let frontX = this.x + Math.cos(angle) * this.size;
+                let frontY = this.y + Math.sin(angle) * this.size;
+                ctx.moveTo(backX, backY);
+                ctx.lineTo(frontX, frontY);
+                
+                // Grapple prongs
+                ctx.arc(this.x, this.y, this.size, angle - Math.PI*0.8, angle + Math.PI*0.8);
+                
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color; ctx.stroke();
+            } else if (this.type === 'kunai') {
+                ctx.beginPath();
+                let angle = Math.atan2(this.dirY, this.dirX);
+                ctx.translate(this.x, this.y);
+                ctx.rotate(angle);
+                ctx.moveTo(10, 0); ctx.lineTo(-5, 4); ctx.lineTo(-5, -4); ctx.closePath();
+                ctx.fillStyle = '#fff'; ctx.shadowBlur = 10; ctx.shadowColor = this.color; ctx.fill();
+                ctx.beginPath(); ctx.moveTo(-5, 0); ctx.lineTo(-12, 0); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.rotate(-angle);
+                ctx.translate(-this.x, -this.y);
             } else {
                 ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
                 ctx.fillStyle = '#fff'; ctx.shadowBlur = 15;
@@ -937,6 +1000,9 @@
             this.knockbackX = 0; this.knockbackY = 0; this.invulnerable = 0;
             this.isDead = false; this.respawnTimer = 0;
             this.teleportCooldown = 0;
+            this.myPortals = [];
+            this.activeKunai = null;
+            this.kunaiReleaseRequired = false;
             
             this.aiStrafe = 0;
             this.isDrawing = false; this.drawStartX = 0; this.drawStartY = 0; this.drawEndX = 0; this.drawEndY = 0;
@@ -954,6 +1020,10 @@
             if (!gameActive) return;
             if (this.teleportCooldown > 0) this.teleportCooldown--;
             if (this.isDead) {
+                this.myPortals.forEach(pt => pt.life = 0);
+                this.myPortals = [];
+                if (this.activeKunai) this.activeKunai.life = 0;
+                this.activeKunai = null;
                 this.isDrawing = false;
                 this.respawnTimer--;
                 if (this.respawnTimer <= 0) {
@@ -964,6 +1034,11 @@
                     updateHealthBars();
                 }
                 return;
+            }
+            
+            if (this.weaponType === 'kunai' && this.activeKunai && this.activeKunai.life <= 0) {
+                this.activeKunai = null;
+                this.cooldownTimer = this.attackCooldown;
             }
 
             if (this.invulnerable > 0) this.invulnerable--;
@@ -1054,6 +1129,18 @@
                         } else if (closestEnemyBed) { 
                             targetX = closestEnemyBed.x; targetY = closestEnemyBed.y; targetType = 'objective'; 
                         }
+                    } else if (currentMode === 'tag') {
+                        let itPlayer = players.find(p => p.id === tagItId);
+                        if (this.id !== tagItId && itPlayer && !itPlayer.isDead && getTeam(this.id) !== getTeam(itPlayer.id)) {
+                            targetX = this.x + (this.x - itPlayer.x);
+                            targetY = this.y + (this.y - itPlayer.y);
+                            targetType = 'objective';
+                            if (Math.hypot(this.x - itPlayer.x, this.y - itPlayer.y) < 200) {
+                                wantToAttack = true;
+                                aimTargetX = itPlayer.x;
+                                aimTargetY = itPlayer.y;
+                            }
+                        }
                     }
                     
                     if (targetType === 'player' && !anyEnemyAlive) { targetX = this.x; targetY = this.y; }
@@ -1111,7 +1198,7 @@
                         if (dist > 5) { moveX = dx / dist; moveY = dy / dist; }
                         if (anyEnemyAlive) {
                             let distToEnemy = Math.hypot(enemy.x - this.x, enemy.y - this.y) || 1;
-                            if (distToEnemy < (this.weaponType === 'bow' || this.weaponType === 'orb' || this.weaponType === 'bounce' ? 350 : 80) && Math.random() < 0.05 * diffAttackMod) {
+                            if (distToEnemy < (this.weaponType === 'hook' || this.weaponType === 'kunai' ? 500 : (this.weaponType === 'bow' || this.weaponType === 'orb' || this.weaponType === 'bounce' ? 350 : 80)) && Math.random() < 0.05 * diffAttackMod) {
                                 wantToAttack = true; aimTargetX = enemy.x; aimTargetY = enemy.y;
                             } else if (moveX !== 0 || moveY !== 0) {
                                 if (this.weaponType === 'orb') {
@@ -1121,14 +1208,14 @@
                                 }
                             }
                         }
-                        if (currentMode === 'bedwars' && actualDist < (this.weaponType === 'bow' || this.weaponType === 'orb' || this.weaponType === 'bounce' ? 250 : 60) && Math.random() < 0.1 * diffAttackMod) {
+                        if (currentMode === 'bedwars' && actualDist < (this.weaponType === 'hook' || this.weaponType === 'kunai' ? 400 : (this.weaponType === 'bow' || this.weaponType === 'orb' || this.weaponType === 'bounce' ? 250 : 60)) && Math.random() < 0.1 * diffAttackMod) {
                              wantToAttack = true; aimTargetX = targetX; aimTargetY = targetY;
                         }
                     } else if (anyEnemyAlive) {
-                        if (this.weaponType === 'bow' || this.weaponType === 'dash' || this.weaponType === 'builder' || this.weaponType === 'orb' || this.weaponType === 'bounce') {
-                            if (actualDist > (this.weaponType==='bow' || this.weaponType==='orb' || this.weaponType==='bounce' ? 300 : 150)) { moveX = dx / dist; moveY = dy / dist; }
-                            else if (actualDist < (this.weaponType==='builder'?80:200)) { moveX = -dx / dist; moveY = -dy / dist; }
-                            if (actualDist < 400 && Math.random() < 0.04 * diffAttackMod && !blockingObs) { wantToAttack = true; aimTargetX = targetX; aimTargetY = targetY; }
+                        if (this.weaponType === 'bow' || this.weaponType === 'dash' || this.weaponType === 'builder' || this.weaponType === 'orb' || this.weaponType === 'bounce' || this.weaponType === 'hook' || this.weaponType === 'kunai') {
+                            if (actualDist > (this.weaponType === 'hook' || this.weaponType === 'kunai' ? 400 : (this.weaponType==='bow' || this.weaponType==='orb' || this.weaponType==='bounce' ? 300 : 150))) { moveX = dx / dist; moveY = dy / dist; }
+                            else if (actualDist < (this.weaponType==='builder'?80: (this.weaponType==='hook' || this.weaponType==='kunai' ? 200 : 200))) { moveX = -dx / dist; moveY = -dy / dist; }
+                            if (actualDist < (this.weaponType === 'hook' || this.weaponType === 'kunai' ? 550 : 400) && Math.random() < 0.04 * diffAttackMod && !blockingObs) { wantToAttack = true; aimTargetX = targetX; aimTargetY = targetY; }
                         } else {
                             if (actualDist > 45) { moveX = dx / dist; moveY = dy / dist; }
                             else if (actualDist < 35) { moveX = -dx / dist; moveY = -dy / dist; }
@@ -1159,6 +1246,14 @@
                         } else {
                             aimTargetX = enemy.x;
                             aimTargetY = enemy.y;
+                        }
+                    }
+                    
+                    if (this.weaponType === 'kunai' && this.activeKunai && this.activeKunai.life > 0) {
+                        if (enemy && Math.hypot(this.activeKunai.x - enemy.x, this.activeKunai.y - enemy.y) < 150) {
+                            wantToAttack = true;
+                        } else if (this.activeKunai.vx === 0) { // stuck in wall
+                            wantToAttack = true;
                         }
                     }
 
@@ -1213,6 +1308,13 @@
                     this.historyY = this.y;
                 }
             } // END BOT LOGIC
+
+            // Require explicit release and new click for kunai teleport to avoid double-triggering
+            if (!wantToAttack) {
+                this.kunaiReleaseRequired = false;
+            } else if (this.kunaiReleaseRequired && !this.isBot) {
+                wantToAttack = false;
+            }
 
             this.aimTargetX = aimTargetX;
             this.aimTargetY = aimTargetY;
@@ -1279,6 +1381,10 @@
             }
 
             // --- ATTACK EXECUTION ---
+            let canAttack = (this.cooldownTimer === 0);
+            let canKunaiTeleport = (this.weaponType === 'kunai' && this.activeKunai && this.activeKunai.life > 0 && this.cooldownTimer <= Math.max(0, this.attackCooldown - 5));
+            if (canKunaiTeleport) canAttack = true;
+
             if (!this.isDead) {
                 if (this.weaponType === 'builder' && (!this.isBot && this.id === myPlayerId)) {
                     if (wantToAttack && this.cooldownTimer === 0) {
@@ -1301,7 +1407,7 @@
                         this.knockbackX = -this.dirX * 2; this.knockbackY = -this.dirY * 2;
                         this.isAttacking = true; this.attackTimer = this.attackDuration;
                     }
-                } else if (wantToAttack && this.cooldownTimer === 0 && !this.isAttacking) {
+                } else if (wantToAttack && canAttack && !this.isAttacking) {
                     this.isAttacking = true; this.attackTimer = this.attackDuration;
                     if (this.weaponType === 'bow') {
                         arrows.push(new Arrow(this.x + this.dirX * 15, this.y + this.dirY * 15, this.dirX, this.dirY, this.color, this.id, this.damage, 'arrow'));
@@ -1312,6 +1418,28 @@
                     } else if (this.weaponType === 'bounce') {
                         arrows.push(new Arrow(this.x + this.dirX * 15, this.y + this.dirY * 15, this.dirX, this.dirY, this.color, this.id, this.damage, 'bounce'));
                         this.knockbackX = -this.dirX * 4; this.knockbackY = -this.dirY * 4;
+                    } else if (this.weaponType === 'hook') {
+                        arrows.push(new Arrow(this.x + this.dirX * 15, this.y + this.dirY * 15, this.dirX, this.dirY, this.color, this.id, this.damage, 'hook'));
+                        this.knockbackX = -this.dirX * 1; this.knockbackY = -this.dirY * 1; // less initial recoil for the hook
+                    } else if (this.weaponType === 'kunai') {
+                        if (canKunaiTeleport) {
+                            createExplosion(this.x, this.y, this.color);
+                            this.x = this.activeKunai.x;
+                            this.y = this.activeKunai.y;
+                            this.knockbackX = 0; this.knockbackY = 0;
+                            createExplosion(this.x, this.y, '#fff');
+                            this.activeKunai.life = 0;
+                            this.activeKunai = null;
+                            this.attackTimer = 5;
+                        } else {
+                            let k = new Arrow(this.x + this.dirX * 15, this.y + this.dirY * 15, this.dirX, this.dirY, this.color, this.id, this.damage, 'kunai');
+                            arrows.push(k);
+                            this.activeKunai = k;
+                            this.attackTimer = 5;
+                            this.cooldownTimer = 10; // Override so they must wait shortly to teleport
+                            this.knockbackX = -this.dirX * 2; this.knockbackY = -this.dirY * 2;
+                            this.kunaiReleaseRequired = true; // Force player to release click before teleporting
+                        }
                     } else if (this.weaponType === 'builder' && (this.isBot || this.id !== myPlayerId)) {
                         let wallW = Math.abs(this.dirX) > Math.abs(this.dirY) ? 40 : 120;
                         let wallH = Math.abs(this.dirX) > Math.abs(this.dirY) ? 120 : 40;
@@ -1324,6 +1452,36 @@
                         this.knockbackX = this.dirX * 30; this.knockbackY = this.dirY * 30;
                         this.invulnerable = Math.max(this.invulnerable, this.attackDuration);
                         for (let i = 0; i < 5; i++) particles.push(new Particle(this.x, this.y, '#fff'));
+                    } else if (this.weaponType === 'portal') {
+                        let targetX = aimTargetX, targetY = aimTargetY;
+                        let distToTarget = Math.hypot(targetX - this.x, targetY - this.y);
+                        if (distToTarget > 250) {
+                            targetX = this.x + (targetX - this.x) / distToTarget * 250;
+                            targetY = this.y + (targetY - this.y) / distToTarget * 250;
+                        }
+                        
+                        let newId = Math.random().toString();
+                        let newPortal = new Portal(targetX, targetY, this.color, newId, null, this.id);
+                        newPortal.life = 999999;
+                        newPortal.maxLife = 999999;
+                        
+                        this.myPortals.push(newPortal);
+                        portals.push(newPortal);
+                        
+                        if (this.myPortals.length > 2) {
+                            let oldPortal = this.myPortals.shift();
+                            oldPortal.life = 0; 
+                        }
+                        
+                        if (this.myPortals.length === 2) {
+                            this.myPortals[0].partnerId = this.myPortals[1].id;
+                            this.myPortals[1].partnerId = this.myPortals[0].id;
+                        } else if (this.myPortals.length === 1) {
+                            this.myPortals[0].partnerId = null;
+                        }
+                        
+                        this.knockbackX = -this.dirX * 2; this.knockbackY = -this.dirY * 2;
+                        createExplosion(targetX, targetY, '#fff');
                     } else {
                         this.knockbackX = this.dirX * 6; this.knockbackY = this.dirY * 6;
                     }
@@ -1332,7 +1490,12 @@
 
             if (this.isAttacking) {
                 this.attackTimer--;
-                if (this.attackTimer <= 0) { this.isAttacking = false; this.cooldownTimer = this.attackCooldown; }
+                if (this.attackTimer <= 0) { 
+                    this.isAttacking = false; 
+                    if (this.weaponType !== 'kunai' || !this.activeKunai || this.activeKunai.life <= 0) {
+                        this.cooldownTimer = this.attackCooldown; 
+                    }
+                }
             }
         }
 
@@ -1343,6 +1506,10 @@
 
             ctx.fillStyle = this.color; ctx.shadowBlur = 15; ctx.shadowColor = this.color;
             if (this.shape === 'square') ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+            else if (this.shape === 'cross') {
+                ctx.fillRect(-this.size/6, -this.size/2, this.size/3, this.size);
+                ctx.fillRect(-this.size/2, -this.size/6, this.size, this.size/3);
+            }
             else {
                 ctx.beginPath();
                 if (this.shape === 'circle') ctx.arc(0, 0, this.size/2, 0, Math.PI*2);
@@ -1358,6 +1525,24 @@
                     ctx.lineTo(this.size/2 + 5, 0);
                     ctx.lineTo(0, this.size/2 + 5);
                     ctx.lineTo(-this.size/2 - 5, 0);
+                }
+                else if (this.shape === 'kite') {
+                    ctx.moveTo(0, -this.size/2);
+                    ctx.lineTo(this.size/3, 0);
+                    ctx.lineTo(0, this.size/2);
+                    ctx.lineTo(-this.size/3, 0);
+                }
+                else if (this.shape === 'star') {
+                    let spikes = 4;
+                    let outerR = this.size / 1.5;
+                    let innerR = this.size / 4;
+                    for (let i = 0; i < spikes * 2; i++) {
+                        let r = i % 2 === 0 ? outerR : innerR;
+                        let angle = (i * Math.PI) / spikes;
+                        if (i === 0) ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r);
+                        else ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+                    }
+                    ctx.closePath();
                 }
                 else {
                     let sides = this.shape === 'hexagon' ? 6 : (this.shape === 'pentagon' ? 5 : 8);
@@ -1394,6 +1579,36 @@
                 ctx.fillStyle = this.isAttacking ? '#fff' : this.color;
                 ctx.shadowBlur = this.isAttacking ? 15 : 5; ctx.shadowColor = this.color;
                 ctx.fill();
+            } else if (this.weaponType === 'hook') {
+                ctx.beginPath();
+                let angle = Math.atan2(this.dirY, this.dirX);
+                let hx = this.dirX * 20;
+                let hy = this.dirY * 20;
+                
+                // Held grapple shaft
+                ctx.moveTo(hx - Math.cos(angle)*8, hy - Math.sin(angle)*8);
+                ctx.lineTo(hx + Math.cos(angle)*8, hy + Math.sin(angle)*8);
+                
+                // Held grapple prongs
+                ctx.arc(hx, hy, 8, angle - Math.PI*0.8, angle + Math.PI*0.8);
+                
+                ctx.strokeStyle = this.isAttacking ? '#fff' : this.color; 
+                ctx.lineWidth = 3; ctx.shadowBlur = this.isAttacking ? 15 : 5; 
+                ctx.shadowColor = this.color; ctx.stroke();
+            } else if (this.weaponType === 'kunai') {
+                if (this.isAttacking) {
+                    ctx.beginPath();
+                    let hx = this.dirX * 25;
+                    let hy = this.dirY * 25;
+                    let angle = Math.atan2(this.dirY, this.dirX);
+                    ctx.translate(hx, hy);
+                    ctx.rotate(angle);
+                    ctx.moveTo(10, 0); ctx.lineTo(-5, 4); ctx.lineTo(-5, -4); ctx.closePath();
+                    ctx.fillStyle = '#fff'; ctx.shadowBlur = 15; ctx.shadowColor = this.color; ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(-5, 0); ctx.lineTo(-12, 0); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.rotate(-angle);
+                    ctx.translate(-hx, -hy);
+                }
             } else if (this.weaponType === 'builder') {
                 if (this.isDrawing && this.id === myPlayerId) {
                     let w = Math.max(20, Math.min(Math.abs(this.drawEndX - this.drawStartX), 120));
@@ -1406,6 +1621,12 @@
                 if (this.isAttacking) { ctx.fillStyle = '#fff'; ctx.shadowBlur = 15; ctx.shadowColor = this.color; ctx.fillRect(this.dirX * 20 - 10, this.dirY * 20 - 10, 20, 20); }
             } else if (this.weaponType === 'dash') {
                 if (this.isAttacking) { ctx.fillStyle = '#fff'; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.arc(0, 0, this.size * 1.2, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1.0; }
+            } else if (this.weaponType === 'portal') {
+                if (this.isAttacking) {
+                    ctx.beginPath();
+                    ctx.arc(this.dirX * 20, this.dirY * 20, 10, 0, Math.PI*2);
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+                }
             } else {
                 let dExt = this.isAttacking ? this.attackRange : 10;
                 let dBaseX = this.dirX * (this.size/2), dBaseY = this.dirY * (this.size/2);
@@ -1413,6 +1634,23 @@
                 ctx.beginPath(); ctx.moveTo(dBaseX + perpX * 5, dBaseY + perpY * 5); ctx.lineTo(dBaseX - perpX * 5, dBaseY - perpY * 5); ctx.lineTo(dTipX, dTipY); ctx.closePath();
                 ctx.fillStyle = this.isAttacking ? '#fff' : '#888'; ctx.shadowBlur = this.isAttacking ? 20 : 0; ctx.shadowColor = '#fff'; ctx.fill();
             }
+
+            if (currentMode === 'tag' && this.id === tagItId && !this.isDead) {
+                ctx.fillStyle = '#f00';
+                ctx.font = 'bold 20px "Courier New"';
+                ctx.textAlign = 'center';
+                let timeLeft = Math.max(0, Math.ceil(tagTimer / 60));
+                ctx.fillText(`IT! ${timeLeft}`, 0, -this.size - 15);
+                
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size + Math.sin(Date.now() / 100) * 10, 0, Math.PI * 2);
+                ctx.strokeStyle = '#f00';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
             ctx.restore();
         }
 
@@ -1510,7 +1748,7 @@
             document.getElementById(`p${i+1}-health-container`).classList.remove('hidden');
             document.getElementById(`p${i+1}-reload-container`).classList.remove('hidden');
             document.getElementById(`p${i+1}-label`).classList.remove('hidden');
-            if (isTac) document.getElementById(`p${i+1}-score`).style.display = 'block';
+            if (isTac || currentMode === 'tag') document.getElementById(`p${i+1}-score`).style.display = 'block';
             else document.getElementById(`p${i+1}-score`).style.display = 'none';
         }
 
@@ -1523,14 +1761,22 @@
         }
 
         scores = {1:0, 2:0, 3:0, 4:0};
+        if (currentMode === 'tag') scores = {1:3, 2:3, 3:3, 4:3};
         flags = {}; beds = {};
         builtObstacles = []; arrows = []; particles = [];
         portals = [];
         portalSpawnTimer = 100;
+        tagItId = null;
+        tagTimer = 0;
 
         for(let i=0; i<numPlayers; i++) {
             if (currentMode === 'ctf') flags[i+1] = new Flag(spawns[i].x, spawns[i].y, colors[i], i+1);
             if (currentMode === 'bedwars') beds[i+1] = new Bed(spawns[i].x, spawns[i].y, colors[i], i+1);
+        }
+
+        if (currentMode === 'tag') {
+            tagItId = Math.floor(Math.random() * numPlayers) + 1;
+            tagTimer = 900; // 15 Seconds
         }
         
         obstacles = [...baseMapObstacles]; 
@@ -1584,7 +1830,7 @@
             })),
             scores: scores,
             builtObstacles: builtObstacles.map(o => ({x: o.x, y: o.y, w: o.w, h: o.h, life: o.life, color: o.color, ownerId: o.ownerId})),
-            arrows: arrows.map(a => ({x: a.x, y: a.y, dirX: a.dirX, dirY: a.dirY, length: a.length, color: a.color, type: a.type, size: a.size})),
+            arrows: arrows.map(a => ({x: a.x, y: a.y, dirX: a.dirX, dirY: a.dirY, length: a.length, color: a.color, type: a.type, size: a.size, hasHit: a.hasHit})),
         };
         
         if (currentMode === 'ctf') {
@@ -1595,9 +1841,11 @@
             state.beds = {};
             for(let id in beds) state.beds[id] = {life: beds[id].life, isDestroyed: beds[id].isDestroyed};
         }
-        if (isPortalMode) {
-            state.portals = portals.map(p => ({x: p.x, y: p.y, color: p.color, id: p.id, partnerId: p.partnerId, life: p.life, maxLife: p.maxLife}));
+        if (currentMode === 'tag') {
+            state.tagItId = tagItId;
+            state.tagTimer = tagTimer;
         }
+        state.portals = portals.map(p => ({x: p.x, y: p.y, color: p.color, id: p.id, partnerId: p.partnerId, life: p.life, maxLife: p.maxLife, ownerId: p.ownerId}));
         
         setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'rooms', currentRoomCode), { state: state }, { merge: true });
     }
@@ -1635,9 +1883,9 @@
         builtObstacles = state.builtObstacles.map(o => ({...o, isBuilt: true, maxLife: 300}));
         arrows = state.arrows.map(a => Object.assign(new Arrow(), a));
         
-        if (isPortalMode && state.portals) {
+        if (state.portals) {
             portals = state.portals.map(p => {
-                let pt = new Portal(p.x, p.y, p.color, p.id, p.partnerId);
+                let pt = new Portal(p.x, p.y, p.color, p.id, p.partnerId, p.ownerId);
                 pt.life = p.life; pt.maxLife = p.maxLife;
                 return pt;
             });
@@ -1658,6 +1906,10 @@
                     beds[id].life = state.beds[id].life; beds[id].isDestroyed = state.beds[id].isDestroyed;
                 }
             }
+        }
+        if (currentMode === 'tag') {
+            tagItId = state.tagItId;
+            tagTimer = state.tagTimer;
         }
     }
 
@@ -1681,6 +1933,8 @@
                 }
             } else if (currentMode === 'bedwars' && beds[pId]) {
                 el.innerText = beds[pId].isDestroyed ? 'CORE: DEAD' : `CORE: ${Math.ceil((beds[pId].life / beds[pId].maxLife) * 100)}%`;
+            } else if (currentMode === 'tag') {
+                el.innerText = `LIVES: ${scores[pId]}`;
             }
         }
     }
@@ -1698,6 +1952,17 @@
 
     function applyDamage(attacker, defender, knockbackMultX, knockbackMultY, damageAmount) {
         if (defender.isDead || defender.invulnerable > 0) return;
+        
+        if (currentMode === 'tag' && attacker && attacker.id === tagItId && defender.id !== tagItId && getTeam(attacker.id) !== getTeam(defender.id)) {
+            tagItId = defender.id;
+            tagTimer = 900;
+            createExplosion(defender.x, defender.y, '#f00');
+        }
+
+        if (currentMode === 'tag' && attacker && attacker.id !== -1) {
+            damageAmount = 0; // Ignore standard attack damage in tag mode
+        }
+
         defender.health -= damageAmount; defender.invulnerable = 30;
         let kbForce = isKnockbackMode ? 45 : 15;
         defender.knockbackX = knockbackMultX * kbForce; defender.knockbackY = knockbackMultY * kbForce;
@@ -1714,14 +1979,32 @@
                 } else { 
                     defender.isDead = true; defender.respawnTimer = 99999; defender.x = -1000; defender.y = -1000;
                     let aliveTeams = new Set();
-                    players.filter(p => !p.isDead || (beds[p.id] && !beds[p.id].isDestroyed)).forEach(p => aliveTeams.add(getTeam(p.id)));
-                    if (aliveTeams.size <= 1) endGame(attacker);
+                    let alivePlayer = attacker;
+                    players.filter(p => !p.isDead || (beds[p.id] && !beds[p.id].isDestroyed)).forEach(p => { aliveTeams.add(getTeam(p.id)); alivePlayer = p; });
+                    if (aliveTeams.size <= 1) endGame(alivePlayer.id ? alivePlayer : attacker);
+                }
+            } else if (currentMode === 'tag') {
+                scores[defender.id]--;
+                updateScores();
+                if (scores[defender.id] <= 0) {
+                    defender.isDead = true; defender.respawnTimer = 99999; defender.x = -1000; defender.y = -1000;
+                    let aliveTeams = new Set();
+                    let alivePlayer = attacker;
+                    players.filter(p => !p.isDead).forEach(p => { aliveTeams.add(getTeam(p.id)); alivePlayer = p; });
+                    if (aliveTeams.size <= 1) endGame(alivePlayer.id ? alivePlayer : attacker);
+                } else {
+                    defender.health = defender.maxHealth;
+                    defender.isDead = false;
+                    defender.x = defender.homeX; defender.y = defender.homeY;
+                    defender.invulnerable = 90;
+                    updateHealthBars();
                 }
             } else { 
                 defender.isDead = true; defender.respawnTimer = 99999; defender.x = -1000; defender.y = -1000;
                 let aliveTeams = new Set();
-                players.filter(p => !p.isDead).forEach(p => aliveTeams.add(getTeam(p.id)));
-                if (aliveTeams.size <= 1) endGame(attacker);
+                let alivePlayer = attacker;
+                players.filter(p => !p.isDead).forEach(p => { aliveTeams.add(getTeam(p.id)); alivePlayer = p; });
+                if (aliveTeams.size <= 1) endGame(alivePlayer.id ? alivePlayer : attacker);
             }
         }
     }
@@ -1736,6 +2019,14 @@
                         let overlap = minDist - dist, dirX = dx / dist, dirY = dy / dist;
                         pA.x -= dirX * (overlap / 2); pA.y -= dirY * (overlap / 2); 
                         pB.x += dirX * (overlap / 2); pB.y += dirY * (overlap / 2);
+                        
+                        if (currentMode === 'tag') {
+                            if (pA.id === tagItId && pB.id !== tagItId && getTeam(pA.id) !== getTeam(pB.id) && pB.invulnerable <= 0) {
+                                tagItId = pB.id; tagTimer = 900; createExplosion(pB.x, pB.y, '#f00'); pA.invulnerable = 60;
+                            } else if (pB.id === tagItId && pA.id !== tagItId && getTeam(pB.id) !== getTeam(pA.id) && pA.invulnerable <= 0) {
+                                tagItId = pA.id; tagTimer = 900; createExplosion(pA.x, pA.y, '#f00'); pB.invulnerable = 60;
+                            }
+                        }
                     }
                 }
             }
@@ -1778,15 +2069,28 @@
             let arrow = arrows[i], hitObstacle = false, hitWall = false;
             
             // Wall Collision
-            if (arrow.x - arrow.size < 0) { arrow.x = arrow.size; arrow.vx *= -1; arrow.dirX *= -1; hitWall = true; }
-            else if (arrow.x + arrow.size > ARENA_WIDTH) { arrow.x = ARENA_WIDTH - arrow.size; arrow.vx *= -1; arrow.dirX *= -1; hitWall = true; }
-            if (arrow.y - arrow.size < 0) { arrow.y = arrow.size; arrow.vy *= -1; arrow.dirY *= -1; hitWall = true; }
-            else if (arrow.y + arrow.size > ARENA_HEIGHT) { arrow.y = ARENA_HEIGHT - arrow.size; arrow.vy *= -1; arrow.dirY *= -1; hitWall = true; }
+            if (arrow.x - arrow.size < 0) { arrow.x = arrow.size; hitWall = true; if(arrow.type !== 'kunai') { arrow.vx *= -1; arrow.dirX *= -1; } }
+            else if (arrow.x + arrow.size > ARENA_WIDTH) { arrow.x = ARENA_WIDTH - arrow.size; hitWall = true; if(arrow.type !== 'kunai') { arrow.vx *= -1; arrow.dirX *= -1; } }
+            if (arrow.y - arrow.size < 0) { arrow.y = arrow.size; hitWall = true; if(arrow.type !== 'kunai') { arrow.vy *= -1; arrow.dirY *= -1; } }
+            else if (arrow.y + arrow.size > ARENA_HEIGHT) { arrow.y = ARENA_HEIGHT - arrow.size; hitWall = true; if(arrow.type !== 'kunai') { arrow.vy *= -1; arrow.dirY *= -1; } }
 
             if (hitWall) {
                 if (arrow.type === 'bounce' && arrow.bouncesLeft > 0) {
                     arrow.bouncesLeft--;
                     createExplosion(arrow.x, arrow.y, '#fff');
+                } else if (arrow.type === 'hook') {
+                    let owner = players.find(p => p.id === arrow.ownerId);
+                    if (owner && !owner.isDead) {
+                        let hDx = arrow.x - owner.x, hDy = arrow.y - owner.y;
+                        let hDist = Math.hypot(hDx, hDy) || 1;
+                        owner.knockbackX = (hDx / hDist) * 55; // Pull user all the way to wall
+                        owner.knockbackY = (hDy / hDist) * 55;
+                    }
+                    arrow.life = 0; continue;
+                } else if (arrow.type === 'kunai') {
+                    if (arrow.vx !== 0 || arrow.vy !== 0) {
+                        arrow.vx = 0; arrow.vy = 0; arrow.life = 240; // stick around longer
+                    }
                 } else {
                     arrow.life = 0; continue;
                 }
@@ -1808,6 +2112,19 @@
                         createExplosion(arrow.x, arrow.y, '#fff');
                         
                         arrow.x += arrow.vx; arrow.y += arrow.vy;
+                    } else if (arrow.type === 'hook') {
+                        let owner = players.find(p => p.id === arrow.ownerId);
+                        if (owner && !owner.isDead) {
+                            let hDx = arrow.x - owner.x, hDy = arrow.y - owner.y;
+                            let hDist = Math.hypot(hDx, hDy) || 1;
+                            owner.knockbackX = (hDx / hDist) * 55; // Pull user all the way to obstacle
+                            owner.knockbackY = (hDy / hDist) * 55;
+                        }
+                        hitObstacle = true; arrow.life = 0;
+                    } else if (arrow.type === 'kunai') {
+                        if (arrow.vx !== 0 || arrow.vy !== 0) {
+                            arrow.vx = 0; arrow.vy = 0; arrow.life = 240; // stick around longer
+                        }
                     } else {
                         hitObstacle = true; arrow.life = 0;
                     }
@@ -1838,8 +2155,20 @@
                             let hitDx = arrow.vx !== 0 ? arrow.vx : arrow.dirX;
                             let hitDy = arrow.vy !== 0 ? arrow.vy : arrow.dirY;
                             let dist = Math.hypot(hitDx, hitDy) || 1;
-                            applyDamage(ownerP, defender, hitDx/dist, hitDy/dist, arrow.damage); 
-                            arrow.life = 0; 
+                            
+                            if (arrow.type === 'hook') {
+                                applyDamage(ownerP, defender, hitDx/dist, hitDy/dist, arrow.damage); 
+                                arrow.life = 0; 
+                            } else if (arrow.type === 'kunai') {
+                                if (!arrow.hasHit) {
+                                    applyDamage(ownerP, defender, hitDx/dist, hitDy/dist, arrow.damage); 
+                                    arrow.hasHit = true;
+                                    arrow.life = 0;
+                                }
+                            } else {
+                                applyDamage(ownerP, defender, hitDx/dist, hitDy/dist, arrow.damage); 
+                                arrow.life = 0; 
+                            }
                         }
                     }
                 };
@@ -1947,6 +2276,7 @@
                 }
                 document.getElementById('instructionText').innerHTML = `Final Score:<br>${scoreText}`;
             } else if (currentMode === 'bedwars') document.getElementById('instructionText').innerHTML = "Last core standing. Victory achieved.";
+            else if (currentMode === 'tag') document.getElementById('instructionText').innerHTML = "Survivor stands victorious.";
             else document.getElementById('instructionText').innerHTML = "The superior shape has claimed victory.";
             
             document.getElementById('startBtn').innerText = "Rematch Offline";
@@ -2017,6 +2347,26 @@
                 
                 if (currentMode === 'ctf') { for(let id in flags) flags[id].update(); } 
                 else if (currentMode === 'bedwars') { for(let id in beds) beds[id].update(); }
+                else if (currentMode === 'tag') {
+                    let itPlayer = players.find(p => p.id === tagItId);
+                    if (!itPlayer || itPlayer.isDead) {
+                        let alive = players.filter(p => !p.isDead);
+                        if (alive.length > 0) {
+                            tagItId = alive[Math.floor(Math.random() * alive.length)].id;
+                            tagTimer = 900;
+                        }
+                    } else {
+                        tagTimer--;
+                        if (tagTimer <= 0) {
+                            applyDamage({id: -1}, itPlayer, 0, 0, 999);
+                            let alive = players.filter(p => !p.isDead);
+                            if (alive.length > 0) {
+                                tagItId = alive[Math.floor(Math.random() * alive.length)].id;
+                                tagTimer = 900;
+                            }
+                        }
+                    }
+                }
 
                 if (isPortalMode) {
                     portalSpawnTimer--;
@@ -2028,35 +2378,42 @@
                         portals.push(new Portal(Math.random() * (ARENA_WIDTH - 100) + 50, Math.random() * (ARENA_HEIGHT - 100) + 50, color, id2, id1));
                         portalSpawnTimer = 400; 
                     }
+                }
                     
-                    for (let i = portals.length - 1; i >= 0; i--) {
-                        portals[i].update();
-                        if (portals[i].life <= 0) {
-                            createExplosion(portals[i].x, portals[i].y, portals[i].color);
-                            portals.splice(i, 1);
-                        }
+                for (let i = portals.length - 1; i >= 0; i--) {
+                    portals[i].update();
+                    if (portals[i].life <= 0) {
+                        createExplosion(portals[i].x, portals[i].y, portals[i].color);
+                        portals.splice(i, 1);
                     }
+                }
 
-                    let handleTeleport = (entity) => {
-                        if (entity.teleportCooldown > 0 || entity.isDead || entity.life <= 0) return;
-                        for (let pt of portals) {
-                            let r = entity.maxHealth ? entity.size/2 : entity.size; // Player vs Arrow
-                            if (Math.hypot(entity.x - pt.x, entity.y - pt.y) < pt.radius + r) {
-                                let partner = portals.find(partnerPt => partnerPt.id === pt.partnerId);
-                                if (partner) {
-                                    entity.x = partner.x;
-                                    entity.y = partner.y;
-                                    entity.teleportCooldown = 30; // 0.5s cooldown
-                                    createExplosion(pt.x, pt.y, pt.color);
-                                    createExplosion(partner.x, partner.y, partner.color);
-                                    break;
+                let handleTeleport = (entity) => {
+                    if (entity.teleportCooldown > 0 || entity.isDead || entity.life <= 0) return;
+                    for (let pt of portals) {
+                        let r = entity.maxHealth ? entity.size/2 : entity.size; // Player vs Arrow
+                        if (Math.hypot(entity.x - pt.x, entity.y - pt.y) < pt.radius + r) {
+                            let partner = portals.find(partnerPt => partnerPt.id === pt.partnerId);
+                            if (partner) {
+                                entity.x = partner.x;
+                                entity.y = partner.y;
+                                entity.teleportCooldown = 30; // 0.5s cooldown
+                                createExplosion(pt.x, pt.y, pt.color);
+                                createExplosion(partner.x, partner.y, partner.color);
+                                
+                                if (entity.maxHealth && pt.ownerId) {
+                                    if (getTeam(entity.id) !== getTeam(pt.ownerId)) {
+                                        let owner = players.find(p => p.id === pt.ownerId);
+                                        applyDamage(owner || {id: pt.ownerId, color: pt.color}, entity, 0, 0, 1);
+                                    }
                                 }
+                                break;
                             }
                         }
-                    };
-                    players.forEach(p => handleTeleport(p));
-                    arrows.forEach(a => handleTeleport(a));
-                }
+                    }
+                };
+                players.forEach(p => handleTeleport(p));
+                arrows.forEach(a => handleTeleport(a));
 
                 for (let i = builtObstacles.length - 1; i >= 0; i--) {
                     builtObstacles[i].life--;
@@ -2069,10 +2426,10 @@
             } else {
                 if (currentMode === 'ctf') { for(let id in flags) flags[id].update(); } 
                 else if (currentMode === 'bedwars') { for(let id in beds) beds[id].update(); }
-                if (isPortalMode) { portals.forEach(p => p.update()); }
+                portals.forEach(p => p.update());
             }
             
-            if (isPortalMode) { portals.forEach(p => p.draw()); }
+            portals.forEach(p => p.draw());
             if (currentMode === 'ctf') { for(let id in flags) flags[id].draw(); } 
             else if (currentMode === 'bedwars') { for(let id in beds) beds[id].draw(); }
 

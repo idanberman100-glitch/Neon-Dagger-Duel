@@ -24,9 +24,19 @@ jobs:
 
       - name: Inject Firebase config
         run: |
-          # Insert a script tag before the module script that sets __firebase_config
-          # This way Idan's Gemini Canvas code picks it up automatically
-          sed -i 's|<script type="module">|<script>\n    var __firebase_config = '"'"'{"apiKey":"AIzaSyDZgO5btByxfuPY_rgSwMdNlheISWOfDrk","authDomain":"neon-weapon-duel.firebaseapp.com","projectId":"neon-weapon-duel","storageBucket":"neon-weapon-duel.firebasestorage.app","messagingSenderId":"125111155826","appId":"1:125111155826:web:1572f522e12cc2ba1996eb"}'"'"';\n    var __app_id = '"'"'neon-weapon-duel'"'"';\n    </script>\n    <script type="module">|' index.html
+          python3 -c "
+          config = '{\"apiKey\":\"AIzaSyDZgO5btByxfuPY_rgSwMdNlheISWOfDrk\",\"authDomain\":\"neon-weapon-duel.firebaseapp.com\",\"projectId\":\"neon-weapon-duel\",\"storageBucket\":\"neon-weapon-duel.firebasestorage.app\",\"messagingSenderId\":\"125111155826\",\"appId\":\"1:125111155826:web:1572f522e12cc2ba1996eb\"}'
+          inject = '<script>\nvar __firebase_config = \'' + config + '\';\nvar __app_id = \'neon-weapon-duel\';\n</script>\n'
+          with open('index.html', 'r') as f:
+              html = f.read()
+          html = html.replace('<script type=\"module\">', inject + '<script type=\"module\">', 1)
+          with open('index.html', 'w') as f:
+              f.write(html)
+          print('Firebase config injected successfully')
+          "
+
+      - name: Verify injection
+        run: grep -c '__firebase_config' index.html
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

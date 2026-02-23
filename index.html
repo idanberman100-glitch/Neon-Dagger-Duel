@@ -374,26 +374,25 @@
     import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // --- Firebase Setup ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyDZgO5btByxfuPY_rgSwMdNlheISWOfDrk",
-        authDomain: "neon-weapon-duel.firebaseapp.com",
-        projectId: "neon-weapon-duel",
-        storageBucket: "neon-weapon-duel.firebasestorage.app",
-        messagingSenderId: "125111155826",
-        appId: "1:125111155826:web:1572f522e12cc2ba1996eb"
-    };
-    const appId = 'neon-weapon-duel';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-neon-dagger';
     let auth, db, user;
 
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
+    if (firebaseConfig) {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
 
-    const initAuth = async () => {
-        await signInAnonymously(auth);
-    };
-    initAuth();
-    onAuthStateChanged(auth, u => { user = u; });
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+        initAuth();
+        onAuthStateChanged(auth, u => { user = u; });
+    }
 
     // --- Game Engine Variables ---
     const canvas = document.getElementById('gameCanvas');
